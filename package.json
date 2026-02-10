@@ -2,7 +2,7 @@
   "publisher": "svallory",
   "name": "vscode-jig",
   "displayName": "Jig templates syntax highlighter",
-  "version": "1.6.0",
+  "version": "0.1.0",
   "description": "Official Jig template engine extension for VSCode",
   "author": "virk",
   "license": "MIT",
@@ -47,7 +47,7 @@
         "aliases": [
           "Jig"
         ],
-        "extensions": [],
+        "extensions": [ ],
         "configuration": "./language-configuration.json"
       },
       {
@@ -438,7 +438,7 @@
         "aliases": [
           "Jig Makefile"
         ],
-        "extensions": [],
+        "extensions": [ ],
         "configuration": "./language-configuration.json",
         "filenames": [
           "Makefile.jig"
