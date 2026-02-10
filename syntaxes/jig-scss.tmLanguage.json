@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig SCSS",
+  "scopeName": "text.jig.scss",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.css.scss"
+    }
+  ]
+}

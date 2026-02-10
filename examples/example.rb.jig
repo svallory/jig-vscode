@@ -1,0 +1,18 @@
+def main
+  # Example for jig-ruby
+  title = "{{ title }}"
+  puts "Title: #{title}"
+
+  @if(debugMode)
+    puts "Debug mode is active"
+  @endif
+
+  items = [
+    @each(item in items)
+      "{{ item }}",
+    @endeach
+  ]
+
+  {{-- Jig comment in Ruby --}}
+  p items
+end

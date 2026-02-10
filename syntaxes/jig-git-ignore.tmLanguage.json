@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig Git Ignore",
+  "scopeName": "text.jig.git-ignore",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.ignore"
+    }
+  ]
+}

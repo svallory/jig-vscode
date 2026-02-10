@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig Markdown",
+  "scopeName": "text.jig.markdown",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "text.html.markdown"
+    }
+  ]
+}

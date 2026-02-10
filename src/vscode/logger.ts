@@ -5,7 +5,7 @@ import dedent from 'dedent'
  * Helper for logging to the vscode output channel
  */
 export class Logger {
-  static #channel = window.createOutputChannel('Edge')
+  static #channel = window.createOutputChannel('Jig')
 
   static #baseLog(message: string) {
     const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').split(' ')[1]

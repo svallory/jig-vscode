@@ -6,8 +6,8 @@ import { TemplateIndexer } from '../src/template_indexer'
 
 test.group('Template indexer | Scan', () => {
   test('simple scan', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -18,7 +18,7 @@ test.group('Template indexer | Scan', () => {
 
     assert.includeDeepMembers(result, [
       {
-        path: slash(join(fs.basePath, 'resources/views/components/button.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/button.jig')),
         name: 'components/button',
         disk: 'default',
         isComponent: true,
@@ -27,7 +27,7 @@ test.group('Template indexer | Scan', () => {
         insertText: `button(\${1}) \n\t$0\n@end`,
       },
       {
-        path: slash(join(fs.basePath, 'resources/views/layouts/base.edge')),
+        path: slash(join(fs.basePath, 'resources/views/layouts/base.jig')),
         name: 'layouts/base',
         disk: 'default',
         isComponent: false,
@@ -39,10 +39,10 @@ test.group('Template indexer | Scan', () => {
   })
 
   test('scan with multiple disks', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
-    await fs.create('node_modules/@dimer/components/foo.edge', '')
-    await fs.create('node_modules/@dimer/layouts/foo.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
+    await fs.create('node_modules/@dimer/components/foo.jig', '')
+    await fs.create('node_modules/@dimer/layouts/foo.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -53,7 +53,7 @@ test.group('Template indexer | Scan', () => {
 
     assert.includeDeepMembers(result, [
       {
-        path: slash(join(fs.basePath, 'resources/views/components/button.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/button.jig')),
         name: 'components/button',
         disk: 'default',
         isComponent: true,
@@ -62,7 +62,7 @@ test.group('Template indexer | Scan', () => {
         insertText: `button(\${1}) \n\t$0\n@end`,
       },
       {
-        path: slash(join(fs.basePath, 'resources/views/layouts/base.edge')),
+        path: slash(join(fs.basePath, 'resources/views/layouts/base.jig')),
         name: 'layouts/base',
         disk: 'default',
         isComponent: false,
@@ -71,7 +71,7 @@ test.group('Template indexer | Scan', () => {
         insertText: `null(\${1}) \n\t$0\n@end`,
       },
       {
-        path: slash(join(fs.basePath, 'node_modules/@dimer/components/foo.edge')),
+        path: slash(join(fs.basePath, 'node_modules/@dimer/components/foo.jig')),
         name: 'dimer::components/foo',
         disk: 'dimer',
         isComponent: true,
@@ -80,7 +80,7 @@ test.group('Template indexer | Scan', () => {
         insertText: `dimer.foo(\${1}) \n\t$0\n@end`,
       },
       {
-        path: slash(join(fs.basePath, 'node_modules/@dimer/layouts/foo.edge')),
+        path: slash(join(fs.basePath, 'node_modules/@dimer/layouts/foo.jig')),
         name: 'dimer::layouts/foo',
         disk: 'dimer',
         isComponent: false,
@@ -115,10 +115,10 @@ test.group('Template indexer | Scan', () => {
   })
 
   test('correctly convert the components names', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/button-group.edge', '')
-    await fs.create('resources/views/components/button-group/button.edge', '')
-    await fs.create('resources/views/components/base_test.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/button-group.jig', '')
+    await fs.create('resources/views/components/button-group/button.jig', '')
+    await fs.create('resources/views/components/base_test.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -129,28 +129,28 @@ test.group('Template indexer | Scan', () => {
 
     assert.containsSubset(result, [
       {
-        path: slash(join(fs.basePath, 'resources/views/components/button.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/button.jig')),
         name: 'components/button',
         disk: 'default',
         isComponent: true,
         componentName: 'button',
       },
       {
-        path: slash(join(fs.basePath, 'resources/views/components/button-group.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/button-group.jig')),
         name: 'components/button-group',
         disk: 'default',
         isComponent: true,
         componentName: 'buttonGroup',
       },
       {
-        path: slash(join(fs.basePath, 'resources/views/components/button-group/button.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/button-group/button.jig')),
         name: 'components/button-group/button',
         disk: 'default',
         isComponent: true,
         componentName: 'buttonGroup.button',
       },
       {
-        path: slash(join(fs.basePath, 'resources/views/components/base_test.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/base_test.jig')),
         name: 'components/base_test',
         disk: 'default',
         isComponent: true,
@@ -160,8 +160,8 @@ test.group('Template indexer | Scan', () => {
   })
 
   test('correctly prefix secondary disks templates', async ({ assert, fs }) => {
-    await fs.create('node_modules/@dimer/components/foo.edge', '')
-    await fs.create('node_modules/@dimer/layouts/foo.edge', '')
+    await fs.create('node_modules/@dimer/components/foo.jig', '')
+    await fs.create('node_modules/@dimer/layouts/foo.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -172,14 +172,14 @@ test.group('Template indexer | Scan', () => {
 
     assert.containsSubset(result, [
       {
-        path: slash(join(fs.basePath, 'node_modules/@dimer/components/foo.edge')),
+        path: slash(join(fs.basePath, 'node_modules/@dimer/components/foo.jig')),
         name: 'dimer::components/foo',
         disk: 'dimer',
         isComponent: true,
         componentName: 'dimer.foo',
       },
       {
-        path: slash(join(fs.basePath, 'node_modules/@dimer/layouts/foo.edge')),
+        path: slash(join(fs.basePath, 'node_modules/@dimer/layouts/foo.jig')),
         name: 'dimer::layouts/foo',
         disk: 'dimer',
         isComponent: false,
@@ -188,12 +188,12 @@ test.group('Template indexer | Scan', () => {
     ])
   })
 
-  test('components/**/*/index.edge files should be indexed without index.edge suffix', async ({
+  test('components/**/*/index.jig files should be indexed without index.jig suffix', async ({
     assert,
     fs,
   }) => {
-    await fs.create('resources/views/components/button/index.edge', '')
-    await fs.create('resources/views/components/foo/bar/index.edge', '')
+    await fs.create('resources/views/components/button/index.jig', '')
+    await fs.create('resources/views/components/foo/bar/index.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -203,14 +203,14 @@ test.group('Template indexer | Scan', () => {
     const result = await indexer.scan()
     assert.containsSubset(result, [
       {
-        path: slash(join(fs.basePath, 'resources/views/components/button/index.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/button/index.jig')),
         name: 'components/button/index',
         disk: 'default',
         isComponent: true,
         componentName: 'button',
       },
       {
-        path: slash(join(fs.basePath, 'resources/views/components/foo/bar/index.edge')),
+        path: slash(join(fs.basePath, 'resources/views/components/foo/bar/index.jig')),
         name: 'components/foo/bar/index',
         disk: 'default',
         isComponent: true,
@@ -222,9 +222,9 @@ test.group('Template indexer | Scan', () => {
 
 test.group('Template indexer | Search', () => {
   test('simple search', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/foo.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/foo.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -239,9 +239,9 @@ test.group('Template indexer | Search', () => {
   })
 
   test('search with empty text should returns everything', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/foo.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/foo.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -255,9 +255,9 @@ test.group('Template indexer | Search', () => {
   })
 
   test('search text should be sanitized', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/foo.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/foo.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -272,9 +272,9 @@ test.group('Template indexer | Search', () => {
   })
 
   test('returns all matching templates', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/foo.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/foo.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -290,8 +290,8 @@ test.group('Template indexer | Search', () => {
   })
 
   test('search component should only return components', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/layouts/foo.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/layouts/foo.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -305,8 +305,8 @@ test.group('Template indexer | Search', () => {
   })
 
   test('exact search component should only returns exact matches', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/layouts/button.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/layouts/button.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -321,8 +321,8 @@ test.group('Template indexer | Search', () => {
   })
 
   test('search component should be based on componentName', async ({ assert, fs }) => {
-    await fs.create('node_modules/@dimer/components/foo.edge', '')
-    await fs.create('node_modules/@dimer/layouts/foo.edge', '')
+    await fs.create('node_modules/@dimer/components/foo.jig', '')
+    await fs.create('node_modules/@dimer/layouts/foo.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -338,8 +338,8 @@ test.group('Template indexer | Search', () => {
   })
 
   test('search index component', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button/index.edge', '')
-    await fs.create('resources/views/components/foo/bar/index.edge', '')
+    await fs.create('resources/views/components/button/index.jig', '')
+    await fs.create('resources/views/components/foo/bar/index.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,

@@ -1,218 +1,256 @@
 {
-  "edge_props_serialize": {
+  "jig_props_serialize": {
     "prefix": ["props.toAttrs"],
     "description": "Serialize component props to HTML attributes",
     "body": [
       "\\$props.toAttrs()"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_props_merge_and_serialize": {
+  "jig_props_merge_and_serialize": {
     "prefix": ["props.merge"],
     "description": "Merge defaults and serialize props to HTML attributes",
     "body": [
       "\\$props.merge({ $1 }).toAttrs()"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_props_only_serialize": {
+  "jig_props_only_serialize": {
     "prefix": ["props.only"],
     "description": "Serialize selected component props to HTML attributes",
     "body": [
       "\\$props.only(['$1']).toAttrs()"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_props_except_serialize": {
+  "jig_props_except_serialize": {
     "prefix": ["props.except"],
     "description": "Serialize selected component props to HTML attributes",
     "body": [
       "\\$props.except(['$1']).toAttrs()"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_render_slot": {
+  "jig_render_slot": {
     "prefix": ["slots"],
     "description": "Render a slot",
     "body": [
       "await \\$slots.${1}"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_filename_reference": {
+  "jig_filename_reference": {
     "prefix": ["filename"],
     "description": "Path to the current template file",
     "body": [
       "\\$filename"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_caller_reference": {
+  "jig_caller_reference": {
     "prefix": ["caller"],
     "description": "Reference to the caller object",
     "body": [
       "\\$caller.${1|filename,line,col|}"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_nl2br_helper": {
+  "jig_nl2br_helper": {
     "prefix": ["nl2br"],
     "description": "Convert new line to br tags",
     "body": [
       "nl2br(html.escape(${1:'${2:contents}'}))"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_inspect_helper": {
+  "jig_inspect_helper": {
     "prefix": ["inspect"],
     "description": "Inspect value by pretty printing it",
     "body": [
       "inspect(${1:value})"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_truncate_helper": {
+  "jig_truncate_helper": {
     "prefix": ["truncate"],
     "description": "Truncate string after given characters count",
     "body": [
       "truncate(${1:value}, ${2:100})"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_excerpt_helper": {
+  "jig_excerpt_helper": {
     "prefix": ["excerpt"],
     "description": "Generate plain text excerpt and truncate after given characters count",
     "body": [
       "excerpt(${1:value}, ${2:100})"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_html_helpers": {
+  "jig_html_helpers": {
     "prefix": ["html"],
     "description": "Reference to the html helpers",
     "body": [
       "html.${1|escape,safe,classNames,attrs|}($2)"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_stringify_helper": {
+  "jig_stringify_helper": {
     "prefix": ["stringify"],
     "description": "Stringify a value for serialization",
     "body": [
       "js.stringify($1)"
-    ]
+    ],
+    "scope": "javascript,typescript"
   },
-  "edge_camelCase_helper": {
+  "jig_camelCase_helper": {
     "prefix": ["camelCase"],
     "description": "Convert a string to camelcase",
-    "body": ["camelCase(${1:'${2:value}'})"]
+    "body": ["camelCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_snakeCase_helper": {
+  "jig_snakeCase_helper": {
     "prefix": ["snakeCase"],
     "description": "Convert a string to snakeCase",
-    "body": ["snakeCase(${1:'${2:value}'})"]
+    "body": ["snakeCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_dashCase_helper": {
+  "jig_dashCase_helper": {
     "prefix": ["dashCase"],
     "description": "Convert a string to dashCase",
-    "body": ["dashCase(${1:'${2:value}'})"]
+    "body": ["dashCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_pascalCase_helper": {
+  "jig_pascalCase_helper": {
     "prefix": ["pascalCase"],
     "description": "Convert a string to pascalCase",
-    "body": ["pascalCase(${1:'${2:value}'})"]
+    "body": ["pascalCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_capitalCase_helper": {
+  "jig_capitalCase_helper": {
     "prefix": ["capitalCase"],
     "description": "Convert a string to capitalCase",
-    "body": ["capitalCase(${1:'${2:value}'})"]
+    "body": ["capitalCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_sentenceCase_helper": {
+  "jig_sentenceCase_helper": {
     "prefix": ["sentenceCase"],
     "description": "Convert a string to sentenceCase",
-    "body": ["sentenceCase(${1:'${2:value}'})"]
+    "body": ["sentenceCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_dotCase_helper": {
+  "jig_dotCase_helper": {
     "prefix": ["dotCase"],
     "description": "Convert a string to dotCase",
-    "body": ["dotCase(${1:'${2:value}'})"]
+    "body": ["dotCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_noCase_helper": {
+  "jig_noCase_helper": {
     "prefix": ["noCase"],
     "description": "Remove all sort of casing from a string",
-    "body": ["noCase(${1:'${2:value}'})"]
+    "body": ["noCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_titleCase_helper": {
+  "jig_titleCase_helper": {
     "prefix": ["titleCase"],
     "description": "Convert a string to titleCase",
-    "body": ["titleCase(${1:'${2:value}'})"]
+    "body": ["titleCase(${1:'${2:value}'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_pluralize_helper": {
+  "jig_pluralize_helper": {
     "prefix": ["pluralize"],
     "description": "Pluralize a word",
-    "body": ["pluralize(${1:value}${2:, optionalCount})"]
+    "body": ["pluralize(${1:value}${2:, optionalCount})"],
+    "scope": "javascript,typescript"
   },
-  "edge_sentence_helper": {
+  "jig_sentence_helper": {
     "prefix": ["sentence"],
     "description": "Convert an array to a sentence",
-    "body": ["sentence([${1:'car'}, ${2: 'truck'}, ${3: 'van'}], { separator: ', ', lastSeparator: ', or ' })"]
+    "body": ["sentence([${1:'car'}, ${2: 'truck'}, ${3: 'van'}], { separator: ', ', lastSeparator: ', or ' })"],
+    "scope": "javascript,typescript"
   },
-  "edge_prettyMs_helper": {
+  "jig_prettyMs_helper": {
     "prefix": ["prettyMs"],
     "description": "Pretty print milliseconds to human readable string",
-    "body": ["prettyMs(${1:60000})"]
+    "body": ["prettyMs(${1:60000})"],
+    "scope": "javascript,typescript"
   },
-  "edge_toMs_helper": {
+  "jig_toMs_helper": {
     "prefix": ["toMs"],
     "description": "Convert human readable expression to milliseconds",
-    "body": ["toMs(${1:'1min'})"]
+    "body": ["toMs(${1:'1min'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_prettyBytes_helper": {
+  "jig_prettyBytes_helper": {
     "prefix": ["prettyBytes"],
     "description": "Pretty print bytes to human readable string",
-    "body": ["prettyBytes(${1:1024})"]
+    "body": ["prettyBytes(${1:1024})"],
+    "scope": "javascript,typescript"
   },
-  "edge_toBytes_helper": {
+  "jig_toBytes_helper": {
     "prefix": ["toBytes"],
     "description": "Convert human readable expression to bytes",
-    "body": ["toBytes(${1:'1MB'})"]
+    "body": ["toBytes(${1:'1MB'})"],
+    "scope": "javascript,typescript"
   },
-  "edge_ordinal_helper": {
+  "jig_ordinal_helper": {
     "prefix": ["ordinal"],
     "description": "Ordinalize a string or a number value",
-    "body": ["ordinal(${1:value})"]
+    "body": ["ordinal(${1:value})"],
+    "scope": "javascript,typescript"
   },
-  "edge_route_helper": {
+  "jig_route_helper": {
     "prefix": ["route"],
     "description": "Make URL for a route",
-    "body": ["route('${1:routeName}', [${2}])"]
+    "body": ["route('${1:routeName}', [${2}])"],
+    "scope": "javascript,typescript"
   },
-  "edge_signed_route_helper": {
+  "jig_signed_route_helper": {
     "prefix": ["signedRoute"],
     "description": "Make a signed URL for a route",
-    "body": ["signedRoute('${1:routeName}', [${2:args}])"]
+    "body": ["signedRoute('${1:routeName}', [${2:args}])"],
+    "scope": "javascript,typescript"
   },
-  "edge_flash_messages_helpers": {
+  "jig_flash_messages_helpers": {
     "prefix": ["flashMessages"],
     "description": "Reference to flashMessages object",
-    "body": ["flashMessages.${1|has,get|}(${2:key})"]
+    "body": ["flashMessages.${1|has,get|}(${2:key})"],
+    "scope": "javascript,typescript"
   },
-  "edge_asset_helper": {
+  "jig_asset_helper": {
     "prefix": ["asset"],
     "description": "Get path to a frontend asset",
-    "body": ["asset('${1:filePath}')"]
+    "body": ["asset('${1:filePath}')"],
+    "scope": "javascript,typescript"
   },
-  "edge_csrf_field_helper": {
+  "jig_csrf_field_helper": {
     "prefix": ["csrfField"],
     "description": "Add csrfField input field to form",
-    "body": ["csrfField()"]
+    "body": ["csrfField()"],
+    "scope": "javascript,typescript"
   },
-  "edge_csp_helper": {
+  "jig_csp_helper": {
     "prefix": ["cspNonce"],
     "description": "Add CSP nonce to a script tag",
-    "body": ["cspNonce()"]
+    "body": ["cspNonce()"],
+    "scope": "javascript,typescript"
   },
-  "edge_auth_helpers": {
+  "jig_auth_helpers": {
     "prefix": ["auth"],
     "description": "Reference to auth object",
-    "body": ["auth.${1|user,isAuthenticated|}"]
+    "body": ["auth.${1|user,isAuthenticated|}"],
+    "scope": "javascript,typescript"
   },
-  "edge_config_helper": {
+  "jig_config_helper": {
     "prefix": ["config"],
     "description": "Get config value using AdonisJS config provider",
-    "body": ["config('${1:key}')"]
+    "body": ["config('${1:key}')"],
+    "scope": "javascript,typescript"
   },
-  "edge_translation_helper": {
+  "jig_translation_helper": {
     "prefix": ["t"],
     "description": "Translate message using i18n",
-    "body": ["t('${1:key}', ${2:{ $3 \\}})"]
+    "body": ["t('${1:key}', ${2:{ $3 \\}})"],
+    "scope": "javascript,typescript"
   }
 }

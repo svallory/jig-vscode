@@ -1,0 +1,18 @@
+<?php
+// Example for jig-php
+$title = "{{ title }}";
+
+@if(debugMode)
+  echo "Debug mode is active";
+@endif
+
+$items = [
+  @each(item in items)
+    "{{ item }}",
+  @endeach
+];
+
+{{-- Jig comment in PHP --}}
+foreach ($items as $item) {
+  echo $item;
+}

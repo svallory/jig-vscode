@@ -1,0 +1,20 @@
+/* Example for jig-less */
+.container {
+  margin: {{ spacing }}px;
+  color: {{ theme.primaryColor }};
+
+  @if(isResponsive)
+    display: flex;
+  @else
+    display: block;
+  @endif
+
+  background-image: url('{{ backgroundImage }}');
+}
+
+{{-- Jig comment in CSS --}}
+@each(color in palette)
+  .bg-{{ color.name }} {
+    background-color: {{ color.value }};
+  }
+@endeach

@@ -1,23 +1,23 @@
 {
-  "publisher": "adonisjs",
-  "name": "vscode-edge",
-  "displayName": "Edge templates syntax highlighter",
+  "publisher": "svallory",
+  "name": "vscode-jig",
+  "displayName": "Jig templates syntax highlighter",
   "version": "1.6.0",
-  "description": "Official Edge template engine extension for VSCode",
+  "description": "Official Jig template engine extension for VSCode",
   "author": "virk",
   "license": "MIT",
-  "homepage": "https://edgejs.dev/docs/introduction",
+  "homepage": "https://jig-lang.com/docs/introduction",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edge-js/edge-vscode.git"
+    "url": "git+https://github.com/jig-lang/jig-vscode.git"
   },
   "bugs": {
-    "url": "https://github.com/edge-js/edge-vscode/issues"
+    "url": "https://github.com/jig-lang/jig-vscode/issues"
   },
   "keywords": [
-    "edgejs",
-    "edge-template-engine",
-    "adonisjs"
+    "jig",
+    "jig-template-engine",
+    "svallory"
   ],
   "categories": [
     "Programming Languages",
@@ -29,7 +29,7 @@
     "vscode": "^1.80.0"
   },
   "activationEvents": [
-    "workspaceContains:**/*.edge"
+    "workspaceContains:**/*.jig"
   ],
   "extensionDependencies": [
     "vscode.html-language-features"
@@ -37,44 +37,751 @@
   "contributes": {
     "htmlLanguageParticipants": [
       {
-        "languageId": "edge",
+        "languageId": "jig",
         "autoInsert": true
       }
     ],
     "languages": [
       {
-        "id": "edge",
+        "id": "jig",
         "aliases": [
-          "Edge",
-          "edge"
+          "Jig"
+        ],
+        "extensions": [],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-html",
+        "aliases": [
+          "Jig HTML"
         ],
         "extensions": [
-          ".edge"
+          ".jig",
+          ".html.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-css",
+        "aliases": [
+          "Jig CSS"
+        ],
+        "extensions": [
+          ".css.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-js",
+        "aliases": [
+          "Jig JavaScript"
+        ],
+        "extensions": [
+          ".js.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-ts",
+        "aliases": [
+          "Jig TypeScript"
+        ],
+        "extensions": [
+          ".ts.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-json",
+        "aliases": [
+          "Jig JSON"
+        ],
+        "extensions": [
+          ".json.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-jsx",
+        "aliases": [
+          "Jig JSX"
+        ],
+        "extensions": [
+          ".jsx.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-tsx",
+        "aliases": [
+          "Jig TSX"
+        ],
+        "extensions": [
+          ".tsx.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-c",
+        "aliases": [
+          "Jig C"
+        ],
+        "extensions": [
+          ".c.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-cpp",
+        "aliases": [
+          "Jig C++"
+        ],
+        "extensions": [
+          ".cpp.jig",
+          ".h.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-csharp",
+        "aliases": [
+          "Jig C#"
+        ],
+        "extensions": [
+          ".cs.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-dart",
+        "aliases": [
+          "Jig Dart"
+        ],
+        "extensions": [
+          ".dart.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-dockerfile",
+        "aliases": [
+          "Jig Dockerfile"
+        ],
+        "extensions": [
+          ".dockerfile.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-fsharp",
+        "aliases": [
+          "Jig F#"
+        ],
+        "extensions": [
+          ".fs.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-go",
+        "aliases": [
+          "Jig Go"
+        ],
+        "extensions": [
+          ".go.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-java",
+        "aliases": [
+          "Jig Java"
+        ],
+        "extensions": [
+          ".java.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-julia",
+        "aliases": [
+          "Jig Julia"
+        ],
+        "extensions": [
+          ".jl.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-less",
+        "aliases": [
+          "Jig Less"
+        ],
+        "extensions": [
+          ".less.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-markdown",
+        "aliases": [
+          "Jig Markdown"
+        ],
+        "extensions": [
+          ".md.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-php",
+        "aliases": [
+          "Jig PHP"
+        ],
+        "extensions": [
+          ".php.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-powershell",
+        "aliases": [
+          "Jig PowerShell"
+        ],
+        "extensions": [
+          ".ps1.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-python",
+        "aliases": [
+          "Jig Python"
+        ],
+        "extensions": [
+          ".py.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-r",
+        "aliases": [
+          "Jig R"
+        ],
+        "extensions": [
+          ".r.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-ruby",
+        "aliases": [
+          "Jig Ruby"
+        ],
+        "extensions": [
+          ".rb.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-rust",
+        "aliases": [
+          "Jig Rust"
+        ],
+        "extensions": [
+          ".rs.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-scss",
+        "aliases": [
+          "Jig SCSS"
+        ],
+        "extensions": [
+          ".scss.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-shell",
+        "aliases": [
+          "Jig Shell Script"
+        ],
+        "extensions": [
+          ".sh.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-sql",
+        "aliases": [
+          "Jig SQL"
+        ],
+        "extensions": [
+          ".sql.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-swift",
+        "aliases": [
+          "Jig Swift"
+        ],
+        "extensions": [
+          ".swift.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-xml",
+        "aliases": [
+          "Jig XML"
+        ],
+        "extensions": [
+          ".xml.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-yaml",
+        "aliases": [
+          "Jig YAML"
+        ],
+        "extensions": [
+          ".yaml.jig",
+          ".yml.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-lua",
+        "aliases": [
+          "Jig Lua"
+        ],
+        "extensions": [
+          ".lua.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-perl",
+        "aliases": [
+          "Jig Perl"
+        ],
+        "extensions": [
+          ".pl.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-groovy",
+        "aliases": [
+          "Jig Groovy"
+        ],
+        "extensions": [
+          ".groovy.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-bat",
+        "aliases": [
+          "Jig Bat"
+        ],
+        "extensions": [
+          ".bat.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-clojure",
+        "aliases": [
+          "Jig Clojure"
+        ],
+        "extensions": [
+          ".clj.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-coffee",
+        "aliases": [
+          "Jig CoffeeScript"
+        ],
+        "extensions": [
+          ".coffee.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-diff",
+        "aliases": [
+          "Jig Diff"
+        ],
+        "extensions": [
+          ".diff.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-git-ignore",
+        "aliases": [
+          "Jig Git Ignore"
+        ],
+        "extensions": [
+          ".gitignore.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-makefile",
+        "aliases": [
+          "Jig Makefile"
+        ],
+        "extensions": [],
+        "configuration": "./language-configuration.json",
+        "filenames": [
+          "Makefile.jig"
+        ]
+      },
+      {
+        "id": "jig-objc",
+        "aliases": [
+          "Jig Objective-C"
+        ],
+        "extensions": [
+          ".m.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-objcpp",
+        "aliases": [
+          "Jig Objective-C++"
+        ],
+        "extensions": [
+          ".mm.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-shaderlab",
+        "aliases": [
+          "Jig ShaderLab"
+        ],
+        "extensions": [
+          ".shader.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-vb",
+        "aliases": [
+          "Jig Visual Basic"
+        ],
+        "extensions": [
+          ".vb.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-xsl",
+        "aliases": [
+          "Jig XSL"
+        ],
+        "extensions": [
+          ".xsl.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-elixir",
+        "aliases": [
+          "Jig Elixir"
+        ],
+        "extensions": [
+          ".ex.jig",
+          ".exs.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-eex",
+        "aliases": [
+          "Jig Embedded Elixir"
+        ],
+        "extensions": [
+          ".eex.jig",
+          ".leex.jig"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "jig-html-eex",
+        "aliases": [
+          "Jig HTML EEX"
+        ],
+        "extensions": [
+          ".html.eex.jig",
+          ".html.leex.jig"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "edge",
-        "scopeName": "text.html.edge",
-        "path": "./syntaxes/edge.tmLanguage.json"
+        "language": "jig",
+        "scopeName": "source.jig",
+        "path": "./syntaxes/jig.tmLanguage.json"
+      },
+      {
+        "language": "jig-html",
+        "scopeName": "text.jig.html",
+        "path": "./syntaxes/jig-html.tmLanguage.json"
+      },
+      {
+        "language": "jig-css",
+        "scopeName": "text.jig.css",
+        "path": "./syntaxes/jig-css.tmLanguage.json"
+      },
+      {
+        "language": "jig-js",
+        "scopeName": "text.jig.js",
+        "path": "./syntaxes/jig-js.tmLanguage.json"
+      },
+      {
+        "language": "jig-ts",
+        "scopeName": "text.jig.ts",
+        "path": "./syntaxes/jig-ts.tmLanguage.json"
+      },
+      {
+        "language": "jig-json",
+        "scopeName": "text.jig.json",
+        "path": "./syntaxes/jig-json.tmLanguage.json"
+      },
+      {
+        "language": "jig-jsx",
+        "scopeName": "text.jig.jsx",
+        "path": "./syntaxes/jig-jsx.tmLanguage.json"
+      },
+      {
+        "language": "jig-tsx",
+        "scopeName": "text.jig.tsx",
+        "path": "./syntaxes/jig-tsx.tmLanguage.json"
+      },
+      {
+        "language": "jig-c",
+        "scopeName": "text.jig.c",
+        "path": "./syntaxes/jig-c.tmLanguage.json"
+      },
+      {
+        "language": "jig-cpp",
+        "scopeName": "text.jig.cpp",
+        "path": "./syntaxes/jig-cpp.tmLanguage.json"
+      },
+      {
+        "language": "jig-csharp",
+        "scopeName": "text.jig.csharp",
+        "path": "./syntaxes/jig-csharp.tmLanguage.json"
+      },
+      {
+        "language": "jig-dart",
+        "scopeName": "text.jig.dart",
+        "path": "./syntaxes/jig-dart.tmLanguage.json"
+      },
+      {
+        "language": "jig-dockerfile",
+        "scopeName": "text.jig.dockerfile",
+        "path": "./syntaxes/jig-dockerfile.tmLanguage.json"
+      },
+      {
+        "language": "jig-fsharp",
+        "scopeName": "text.jig.fsharp",
+        "path": "./syntaxes/jig-fsharp.tmLanguage.json"
+      },
+      {
+        "language": "jig-go",
+        "scopeName": "text.jig.go",
+        "path": "./syntaxes/jig-go.tmLanguage.json"
+      },
+      {
+        "language": "jig-java",
+        "scopeName": "text.jig.java",
+        "path": "./syntaxes/jig-java.tmLanguage.json"
+      },
+      {
+        "language": "jig-julia",
+        "scopeName": "text.jig.julia",
+        "path": "./syntaxes/jig-julia.tmLanguage.json"
+      },
+      {
+        "language": "jig-less",
+        "scopeName": "text.jig.less",
+        "path": "./syntaxes/jig-less.tmLanguage.json"
+      },
+      {
+        "language": "jig-markdown",
+        "scopeName": "text.jig.markdown",
+        "path": "./syntaxes/jig-markdown.tmLanguage.json"
+      },
+      {
+        "language": "jig-php",
+        "scopeName": "text.jig.php",
+        "path": "./syntaxes/jig-php.tmLanguage.json"
+      },
+      {
+        "language": "jig-powershell",
+        "scopeName": "text.jig.powershell",
+        "path": "./syntaxes/jig-powershell.tmLanguage.json"
+      },
+      {
+        "language": "jig-python",
+        "scopeName": "text.jig.python",
+        "path": "./syntaxes/jig-python.tmLanguage.json"
+      },
+      {
+        "language": "jig-r",
+        "scopeName": "text.jig.r",
+        "path": "./syntaxes/jig-r.tmLanguage.json"
+      },
+      {
+        "language": "jig-ruby",
+        "scopeName": "text.jig.ruby",
+        "path": "./syntaxes/jig-ruby.tmLanguage.json"
+      },
+      {
+        "language": "jig-rust",
+        "scopeName": "text.jig.rust",
+        "path": "./syntaxes/jig-rust.tmLanguage.json"
+      },
+      {
+        "language": "jig-scss",
+        "scopeName": "text.jig.scss",
+        "path": "./syntaxes/jig-scss.tmLanguage.json"
+      },
+      {
+        "language": "jig-shell",
+        "scopeName": "text.jig.shell",
+        "path": "./syntaxes/jig-shell.tmLanguage.json"
+      },
+      {
+        "language": "jig-sql",
+        "scopeName": "text.jig.sql",
+        "path": "./syntaxes/jig-sql.tmLanguage.json"
+      },
+      {
+        "language": "jig-swift",
+        "scopeName": "text.jig.swift",
+        "path": "./syntaxes/jig-swift.tmLanguage.json"
+      },
+      {
+        "language": "jig-xml",
+        "scopeName": "text.jig.xml",
+        "path": "./syntaxes/jig-xml.tmLanguage.json"
+      },
+      {
+        "language": "jig-yaml",
+        "scopeName": "text.jig.yaml",
+        "path": "./syntaxes/jig-yaml.tmLanguage.json"
+      },
+      {
+        "language": "jig-lua",
+        "scopeName": "text.jig.lua",
+        "path": "./syntaxes/jig-lua.tmLanguage.json"
+      },
+      {
+        "language": "jig-perl",
+        "scopeName": "text.jig.perl",
+        "path": "./syntaxes/jig-perl.tmLanguage.json"
+      },
+      {
+        "language": "jig-groovy",
+        "scopeName": "text.jig.groovy",
+        "path": "./syntaxes/jig-groovy.tmLanguage.json"
+      },
+      {
+        "language": "jig-bat",
+        "scopeName": "text.jig.bat",
+        "path": "./syntaxes/jig-bat.tmLanguage.json"
+      },
+      {
+        "language": "jig-clojure",
+        "scopeName": "text.jig.clojure",
+        "path": "./syntaxes/jig-clojure.tmLanguage.json"
+      },
+      {
+        "language": "jig-coffee",
+        "scopeName": "text.jig.coffee",
+        "path": "./syntaxes/jig-coffee.tmLanguage.json"
+      },
+      {
+        "language": "jig-diff",
+        "scopeName": "text.jig.diff",
+        "path": "./syntaxes/jig-diff.tmLanguage.json"
+      },
+      {
+        "language": "jig-git-ignore",
+        "scopeName": "text.jig.git-ignore",
+        "path": "./syntaxes/jig-git-ignore.tmLanguage.json"
+      },
+      {
+        "language": "jig-makefile",
+        "scopeName": "text.jig.makefile",
+        "path": "./syntaxes/jig-makefile.tmLanguage.json"
+      },
+      {
+        "language": "jig-objc",
+        "scopeName": "text.jig.objc",
+        "path": "./syntaxes/jig-objc.tmLanguage.json"
+      },
+      {
+        "language": "jig-objcpp",
+        "scopeName": "text.jig.objcpp",
+        "path": "./syntaxes/jig-objcpp.tmLanguage.json"
+      },
+      {
+        "language": "jig-shaderlab",
+        "scopeName": "text.jig.shaderlab",
+        "path": "./syntaxes/jig-shaderlab.tmLanguage.json"
+      },
+      {
+        "language": "jig-vb",
+        "scopeName": "text.jig.vb",
+        "path": "./syntaxes/jig-vb.tmLanguage.json"
+      },
+      {
+        "language": "jig-xsl",
+        "scopeName": "text.jig.xsl",
+        "path": "./syntaxes/jig-xsl.tmLanguage.json"
+      },
+      {
+        "language": "jig-elixir",
+        "scopeName": "text.jig.elixir",
+        "path": "./syntaxes/jig-elixir.tmLanguage.json"
+      },
+      {
+        "language": "jig-eex",
+        "scopeName": "text.jig.eex",
+        "path": "./syntaxes/jig-eex.tmLanguage.json"
+      },
+      {
+        "language": "jig-html-eex",
+        "scopeName": "text.jig.html-eex",
+        "path": "./syntaxes/jig-html-eex.tmLanguage.json"
       }
     ],
     "snippets": [
       {
-        "language": "edge",
-        "path": "./snippets/edge.json"
+        "path": "./snippets/jig.code-snippets"
       },
       {
-        "language": "javascript",
-        "path": "./snippets/javascript.json"
+        "path": "./snippets/javascript.code-snippets"
       }
     ],
     "configuration": {
-      "title": "Edge",
+      "title": "Jig",
       "properties": {
-        "edge.disks": {
+        "jig.disks": {
           "type": "object",
           "description": "List of disks to be used for resolving the views",
           "default": {
@@ -90,11 +797,11 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "checks": "npm run lint && npm run typecheck && npm run test",
-    "version": "npm run build",
-    "test": "c8 ts-node bin/test.ts",
-    "quick:test": "ts-node bin/test.ts",
-    "vscode:prepublish": "npm run build"
+    "checks": "bun run lint && bun run typecheck && bun run test",
+    "version": "bun run build",
+    "test": "c8 bun bin/test.ts",
+    "quick:test": "bun bin/test.ts",
+    "vscode:prepublish": "bun run build"
   },
   "devDependencies": {
     "@adonisjs/prettier-config": "^1.1.8",

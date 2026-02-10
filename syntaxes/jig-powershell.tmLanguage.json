@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig PowerShell",
+  "scopeName": "text.jig.powershell",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.powershell"
+    }
+  ]
+}

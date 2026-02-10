@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig SQL",
+  "scopeName": "text.jig.sql",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.sql"
+    }
+  ]
+}

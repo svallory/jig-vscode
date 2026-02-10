@@ -1,14 +1,14 @@
 import { CompletionItemKind, Position, Range } from 'vscode'
 import { SuperCompletionItem } from '../wrappers'
 import { IndexerManager } from '../indexer_manager'
-import { edgeComponentsAsTagsCompletionRegex, viewsCompletionRegex } from '../../regexes'
+import { jigComponentsAsTagsCompletionRegex, viewsCompletionRegex } from '../../regexes'
 import { builtinSelfClosingTags, builtinTags } from '../builtin_tags_completion'
 import type { CompletionItem, CompletionItemProvider, TextDocument } from 'vscode'
 
 /**
- * Responsible for providing components/templates completions in .edge files
+ * Responsible for providing components/templates completions in .jig files
  */
-export class EdgeCompletionProvider implements CompletionItemProvider {
+export class JigCompletionProvider implements CompletionItemProvider {
   async provideCompletionItems(doc: TextDocument, pos: Position) {
     let completionItems: CompletionItem[] = []
     const indexer = IndexerManager.getIndexerFromFile(doc.uri.fsPath)
@@ -42,7 +42,7 @@ export class EdgeCompletionProvider implements CompletionItemProvider {
     /**
      * Check if we are within a component as tag completion context and return component suggestions if so
      */
-    const componentAsTagRange = doc.getWordRangeAtPosition(pos, edgeComponentsAsTagsCompletionRegex)
+    const componentAsTagRange = doc.getWordRangeAtPosition(pos, jigComponentsAsTagsCompletionRegex)
     if (componentAsTagRange) {
       const text = doc.getText(componentAsTagRange)
       indexer

@@ -1,0 +1,17 @@
+# {{ title }}
+
+This is a markdown file with Jig structures.
+
+@if(showBanner)
+![Banner]({{ bannerUrl }})
+@endif
+
+## Features
+
+@each(feature in features)
+- **{{ feature.name }}**: {{ feature.description }}
+@endeach
+
+{{-- Jig comment in Markdown --}}
+
+> Quote: {{{ quote }}}

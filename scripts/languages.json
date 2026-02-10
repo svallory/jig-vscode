@@ -1,0 +1,284 @@
+[
+  {
+    "id": "jig-html",
+    "aliases": ["Jig HTML"],
+    "extensions": [".jig", ".html.jig"],
+    "hostLanguageScope": "text.html.basic"
+  },
+  {
+    "id": "jig-css",
+    "aliases": ["Jig CSS"],
+    "extensions": [".css.jig"],
+    "hostLanguageScope": "source.css"
+  },
+  {
+    "id": "jig-js",
+    "aliases": ["Jig JavaScript"],
+    "extensions": [".js.jig"],
+    "hostLanguageScope": "source.js"
+  },
+  {
+    "id": "jig-ts",
+    "aliases": ["Jig TypeScript"],
+    "extensions": [".ts.jig"],
+    "hostLanguageScope": "source.ts"
+  },
+  {
+    "id": "jig-json",
+    "aliases": ["Jig JSON"],
+    "extensions": [".json.jig"],
+    "hostLanguageScope": "source.json"
+  },
+  {
+    "id": "jig-jsx",
+    "aliases": ["Jig JSX"],
+    "extensions": [".jsx.jig"],
+    "hostLanguageScope": "source.js.jsx"
+  },
+  {
+    "id": "jig-tsx",
+    "aliases": ["Jig TSX"],
+    "extensions": [".tsx.jig"],
+    "hostLanguageScope": "source.tsx"
+  },
+  {
+    "id": "jig-c",
+    "aliases": ["Jig C"],
+    "extensions": [".c.jig"],
+    "hostLanguageScope": "source.c"
+  },
+  {
+    "id": "jig-cpp",
+    "aliases": ["Jig C++"],
+    "extensions": [".cpp.jig", ".h.jig"],
+    "hostLanguageScope": "source.cpp"
+  },
+  {
+    "id": "jig-csharp",
+    "aliases": ["Jig C#"],
+    "extensions": [".cs.jig"],
+    "hostLanguageScope": "source.cs"
+  },
+  {
+    "id": "jig-dart",
+    "aliases": ["Jig Dart"],
+    "extensions": [".dart.jig"],
+    "hostLanguageScope": "source.dart"
+  },
+  {
+    "id": "jig-dockerfile",
+    "aliases": ["Jig Dockerfile"],
+    "extensions": [".dockerfile.jig"],
+    "hostLanguageScope": "source.dockerfile"
+  },
+  {
+    "id": "jig-fsharp",
+    "aliases": ["Jig F#"],
+    "extensions": [".fs.jig"],
+    "hostLanguageScope": "source.fsharp"
+  },
+  {
+    "id": "jig-go",
+    "aliases": ["Jig Go"],
+    "extensions": [".go.jig"],
+    "hostLanguageScope": "source.go"
+  },
+  {
+    "id": "jig-java",
+    "aliases": ["Jig Java"],
+    "extensions": [".java.jig"],
+    "hostLanguageScope": "source.java"
+  },
+  {
+    "id": "jig-julia",
+    "aliases": ["Jig Julia"],
+    "extensions": [".jl.jig"],
+    "hostLanguageScope": "source.julia"
+  },
+  {
+    "id": "jig-less",
+    "aliases": ["Jig Less"],
+    "extensions": [".less.jig"],
+    "hostLanguageScope": "source.css.less"
+  },
+  {
+    "id": "jig-markdown",
+    "aliases": ["Jig Markdown"],
+    "extensions": [".md.jig"],
+    "hostLanguageScope": "text.html.markdown"
+  },
+  {
+    "id": "jig-php",
+    "aliases": ["Jig PHP"],
+    "extensions": [".php.jig"],
+    "hostLanguageScope": "text.html.php"
+  },
+  {
+    "id": "jig-powershell",
+    "aliases": ["Jig PowerShell"],
+    "extensions": [".ps1.jig"],
+    "hostLanguageScope": "source.powershell"
+  },
+  {
+    "id": "jig-python",
+    "aliases": ["Jig Python"],
+    "extensions": [".py.jig"],
+    "hostLanguageScope": "source.python"
+  },
+  {
+    "id": "jig-r",
+    "aliases": ["Jig R"],
+    "extensions": [".r.jig"],
+    "hostLanguageScope": "source.r"
+  },
+  {
+    "id": "jig-ruby",
+    "aliases": ["Jig Ruby"],
+    "extensions": [".rb.jig"],
+    "hostLanguageScope": "source.ruby"
+  },
+  {
+    "id": "jig-rust",
+    "aliases": ["Jig Rust"],
+    "extensions": [".rs.jig"],
+    "hostLanguageScope": "source.rust"
+  },
+  {
+    "id": "jig-scss",
+    "aliases": ["Jig SCSS"],
+    "extensions": [".scss.jig"],
+    "hostLanguageScope": "source.css.scss"
+  },
+  {
+    "id": "jig-shell",
+    "aliases": ["Jig Shell Script"],
+    "extensions": [".sh.jig"],
+    "hostLanguageScope": "source.shell"
+  },
+  {
+    "id": "jig-sql",
+    "aliases": ["Jig SQL"],
+    "extensions": [".sql.jig"],
+    "hostLanguageScope": "source.sql"
+  },
+  {
+    "id": "jig-swift",
+    "aliases": ["Jig Swift"],
+    "extensions": [".swift.jig"],
+    "hostLanguageScope": "source.swift"
+  },
+  {
+    "id": "jig-xml",
+    "aliases": ["Jig XML"],
+    "extensions": [".xml.jig"],
+    "hostLanguageScope": "text.xml"
+  },
+  {
+    "id": "jig-yaml",
+    "aliases": ["Jig YAML"],
+    "extensions": [".yaml.jig", ".yml.jig"],
+    "hostLanguageScope": "source.yaml"
+  },
+  {
+    "id": "jig-lua",
+    "aliases": ["Jig Lua"],
+    "extensions": [".lua.jig"],
+    "hostLanguageScope": "source.lua"
+  },
+  {
+    "id": "jig-perl",
+    "aliases": ["Jig Perl"],
+    "extensions": [".pl.jig"],
+    "hostLanguageScope": "source.perl"
+  },
+  {
+    "id": "jig-groovy",
+    "aliases": ["Jig Groovy"],
+    "extensions": [".groovy.jig"],
+    "hostLanguageScope": "source.groovy"
+  },
+  {
+    "id": "jig-bat",
+    "aliases": ["Jig Bat"],
+    "extensions": [".bat.jig"],
+    "hostLanguageScope": "source.batchfile"
+  },
+  {
+    "id": "jig-clojure",
+    "aliases": ["Jig Clojure"],
+    "extensions": [".clj.jig"],
+    "hostLanguageScope": "source.clojure"
+  },
+  {
+    "id": "jig-coffee",
+    "aliases": ["Jig CoffeeScript"],
+    "extensions": [".coffee.jig"],
+    "hostLanguageScope": "source.coffee"
+  },
+  {
+    "id": "jig-diff",
+    "aliases": ["Jig Diff"],
+    "extensions": [".diff.jig"],
+    "hostLanguageScope": "source.diff"
+  },
+  {
+    "id": "jig-git-ignore",
+    "aliases": ["Jig Git Ignore"],
+    "extensions": [".gitignore.jig"],
+    "hostLanguageScope": "source.ignore"
+  },
+  {
+    "id": "jig-makefile",
+    "aliases": ["Jig Makefile"],
+    "extensions": ["Makefile.jig"],
+    "hostLanguageScope": "source.makefile"
+  },
+  {
+    "id": "jig-objc",
+    "aliases": ["Jig Objective-C"],
+    "extensions": [".m.jig"],
+    "hostLanguageScope": "source.objc"
+  },
+  {
+    "id": "jig-objcpp",
+    "aliases": ["Jig Objective-C++"],
+    "extensions": [".mm.jig"],
+    "hostLanguageScope": "source.objcpp"
+  },
+  {
+    "id": "jig-shaderlab",
+    "aliases": ["Jig ShaderLab"],
+    "extensions": [".shader.jig"],
+    "hostLanguageScope": "source.shaderlab"
+  },
+  {
+    "id": "jig-vb",
+    "aliases": ["Jig Visual Basic"],
+    "extensions": [".vb.jig"],
+    "hostLanguageScope": "source.asp.vb.net"
+  },
+  {
+    "id": "jig-xsl",
+    "aliases": ["Jig XSL"],
+    "extensions": [".xsl.jig"],
+    "hostLanguageScope": "text.xml.xsl"
+  },
+  {
+    "id": "jig-elixir",
+    "aliases": ["Jig Elixir"],
+    "extensions": [".ex.jig", ".exs.jig"],
+    "hostLanguageScope": "source.elixir"
+  },
+  {
+    "id": "jig-eex",
+    "aliases": ["Jig Embedded Elixir"],
+    "extensions": [".eex.jig", ".leex.jig"],
+    "hostLanguageScope": "text.elixir"
+  },
+  {
+    "id": "jig-html-eex",
+    "aliases": ["Jig HTML EEX"],
+    "extensions": [".html.eex.jig", ".html.leex.jig"],
+    "hostLanguageScope": "text.html.elixir"
+  }
+]

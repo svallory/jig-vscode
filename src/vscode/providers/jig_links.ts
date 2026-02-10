@@ -11,9 +11,9 @@ import { IndexerManager } from '../indexer_manager'
 import { Linker } from '../../linker'
 
 /**
- * Responsible for providing links ( Go To Click ) on templates in .edge files
+ * Responsible for providing links ( Go To Click ) on templates in .jig files
  */
-export class EdgeLinksProvider implements DocumentLinkProvider {
+export class JigLinksProvider implements DocumentLinkProvider {
   /**
    * Parse the whole document and return all the links found
    */
@@ -22,7 +22,7 @@ export class EdgeLinksProvider implements DocumentLinkProvider {
     if (!indexer) return []
 
     const links = await Linker.getLinks({
-      sourceType: 'edge',
+      sourceType: 'jig',
       fileContent: doc.getText(),
       indexer,
     })

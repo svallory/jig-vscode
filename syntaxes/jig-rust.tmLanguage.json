@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig Rust",
+  "scopeName": "text.jig.rust",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.rust"
+    }
+  ]
+}

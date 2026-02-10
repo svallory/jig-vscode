@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig Elixir",
+  "scopeName": "text.jig.elixir",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.elixir"
+    }
+  ]
+}

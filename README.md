@@ -3,18 +3,18 @@
 </div>
 
 <div align="center">
-  <h2> Edge templates extension for VSCode </h2>
+  <h2> Jig templates extension for VSCode </h2>
 </div>
 
 <br />
 <hr />
 <br />
 
-This is the official extension for VSCode created by the creators of Edge.js. The extension adds support for the following features.
+This is the official extension for VSCode created by the creators of Jig.js. The extension adds support for the following features.
 
-- Syntax highlighting for both HTML and Edge
-- Code folding for Edge tags
-- "Go To Template" in `.edge` and `.js/.ts` files
+- Syntax highlighting for both HTML and Jig
+- Code folding for Jig tags
+- "Go To Template" in `.jig` and `.js/.ts` files
 - Auto-completion for components and templates
 - [Tags snippets](#tags-snippets)
 - [Inbuilt helpers snippets](#inbuilt-helpers-snippets)
@@ -29,34 +29,34 @@ This is the official extension for VSCode created by the creators of Edge.js. Th
 
 Following is the list of available configuration options :
 
-### `edge.disks`
+### `jig.disks`
 
-In order to benefit from autocompletion and Go-To links, the extension needs to know the directories hosting your Edge templates. 
+In order to benefit from autocompletion and Go-To links, the extension needs to know the directories hosting your Jig templates. 
 
 That's what this option is for : it's an object whose keys are the disk names and values the paths to the template directories, relative to the root of your project.
 
-By default, `edge.disk` has this value:
+By default, `jig.disk` has this value:
 
 ```json
 {
-  "edge.disks": {
+  "jig.disks": {
     "default": "resources/views"
   }
 }
 ```
 This is perfectly suited to AdonisJS projects by default.
 
-If you set up a secondary disk with Edge, like this
+If you set up a secondary disk with Jig, like this
 ```ts
 const BASE_URL = new URL('./', import.meta.url)
-edge.mount('mydisk', new URL('my/sub/directory', BASE_URL))
+jig.mount('mydisk', new URL('my/sub/directory', BASE_URL))
 ```
 
 You can configure the extension as follows:
 
 ```json
 {
-  "edge.disks": {
+  "jig.disks": {
     "default": "resources/views",
     "mydisk": "my/sub/directory"
   }
@@ -65,26 +65,26 @@ You can configure the extension as follows:
 
 ---
 
-If you are using packages such as `edge-uikit` or `@dimer/docs-theme` which add extra templates, you can configure new disks like this:
+If you are using packages such as `@jig-lang/uikit` or `@dimer/docs-theme` which add extra templates, you can configure new disks like this:
 
 ```json
 {
-  "edge.disks": {
+  "jig.disks": {
     "default": "resources/views",
     "docs": "node_modules/dimerapp/docs-theme/build/templates",
-    "ui": "node_modules/edge-uikit/build/views"
+    "ui": "node_modules/@jig-lang/uikit/build/views"
   }
 }
 ```
 
 ### Emmet support
 
-If you want to use Emmet in your Edge templates, you can add the following configuration:
+If you want to use Emmet in your Jig templates, you can add the following configuration:
 
 ```json
 {
   "emmet.includeLanguages": {
-    "edge": "html"
+    "jig": "html"
   }
 }
 ```

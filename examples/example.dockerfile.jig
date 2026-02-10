@@ -1,0 +1,15 @@
+# Example for jig-dockerfile
+export APP_NAME="{{ name }}"
+
+@if(isDevelopment)
+  echo "Starting in dev mode"
+  npm run dev
+@else
+  echo "Starting in production"
+  npm start
+@endif
+
+# Dynamic dependencies
+@each(dep in dependencies)
+  # Installing {{ dep }}
+@endeach

@@ -1,0 +1,20 @@
+<!-- Example for jig-html -->
+<div class="{{ className }}">
+  <h1>{{ title }}</h1>
+  @if(user.isLoggedIn)
+    <p>Welcome back, {{ user.name }}!</p>
+  @else
+    <p>Please <a href="/login">log in</a>.</p>
+  @endif
+
+  <ul>
+    @each(item in items)
+      <li class="@if(item.active) active @endif">
+        {{ item.label }}
+      </li>
+    @endeach
+  </ul>
+
+  {{-- This is a Jig comment --}}
+  {{{ unescapedHtml }}}
+</div>

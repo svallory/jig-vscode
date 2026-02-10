@@ -8,9 +8,9 @@ interface Config {
  * Store the extension configuration
  */
 export class ExtConfig {
-  public static readonly EXTENSION_NAME = 'vscode-edge'
+  public static readonly EXTENSION_NAME = 'vscode-jig'
 
-  public static readonly CONFIG_NAME = 'edge'
+  public static readonly CONFIG_NAME = 'jig'
 
   /**
    * Get the disks configuration

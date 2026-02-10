@@ -1,0 +1,22 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+int main() {
+    // Example for jig-cpp
+    std::string title = "{{ title }}";
+    std::cout << "Title: " << title << std::endl;
+
+    @if(debugMode)
+    std::cout << "Debug mode active" << std::endl;
+    @endif
+
+    std::vector<std::string> items = {
+        @each(item in items)
+        "{{ item }}",
+        @endeach
+    };
+
+    {{-- Jig comment in C++ --}}
+    return 0;
+}

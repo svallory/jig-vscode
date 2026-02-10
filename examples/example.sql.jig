@@ -1,0 +1,13 @@
+-- Example for jig-sql
+SELECT
+  name,
+  email
+FROM users
+WHERE id = {{ userId }}
+  @if(activeOnly)
+    AND status = 'active'
+  @endif
+ORDER BY
+  @each(sort in sortBy)
+    {{ sort.column }} {{ sort.direction }}@if(!loop.last),@endif
+  @endeach;

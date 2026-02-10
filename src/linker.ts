@@ -1,4 +1,4 @@
-import { edgeComponentsAsTagsRegex, edgeRegex, tsRegex } from './regexes'
+import { jigComponentsAsTagsRegex, jigRegex, tsRegex } from './regexes'
 import type { GetLinksOptions } from './types'
 
 /**
@@ -37,9 +37,9 @@ export class Linker {
    * Get all the links that are being referenced as components as tags
    */
   static async #getComponentAsTagsLinks(options: GetLinksOptions) {
-    if (options.sourceType !== 'edge') return []
+    if (options.sourceType !== 'jig') return []
 
-    const matches = Array.from(options.fileContent.matchAll(edgeComponentsAsTagsRegex) || [])
+    const matches = Array.from(options.fileContent.matchAll(jigComponentsAsTagsRegex) || [])
     const matchCounts: Record<string, number> = {}
     const lines = options.fileContent.split('\n')
 
@@ -57,7 +57,7 @@ export class Linker {
    * Get all the links that are referenced in the file
    */
   static async #getTemplateLinks(options: GetLinksOptions) {
-    const regex = options.sourceType === 'edge' ? edgeRegex : tsRegex
+    const regex = options.sourceType === 'jig' ? jigRegex : tsRegex
 
     const matches = Array.from(options.fileContent.matchAll(regex) || [])
     const matchCounts: Record<string, number> = {}

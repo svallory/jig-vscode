@@ -13,7 +13,7 @@ export interface Project {
 }
 
 /**
- * Represent an Edge file in the project
+ * Represent an Jig file in the project
  */
 export interface Template {
   /**
@@ -23,12 +23,12 @@ export interface Template {
 
   /**
    * Name of the template.
-   * @example `button` for `resources/views/components/button.edge`
+   * @example `button` for `resources/views/components/button.jig`
    */
   name: string
 
   /**
-   * The edge disk on which the template is located
+   * The jig disk on which the template is located
    */
   disk: string
 
@@ -50,7 +50,7 @@ export interface Template {
 
   /**
    * The name of the component if the template is a component
-   * @see https://edgejs.dev/docs/components/introduction#filename-to-tagname-conversion
+   * @see https://jigjs.dev/docs/components/introduction#filename-to-tagname-conversion
    */
   componentName: string | null
 }
@@ -65,9 +65,9 @@ export interface GetLinksOptions {
   fileContent: string
 
   /**
-   * Whether the file is an Edge file or a Typescript file
+   * Whether the file is an Jig file or a Typescript file
    */
-  sourceType: 'edge' | 'ts'
+  sourceType: 'jig' | 'ts'
 
   /**
    * The indexer related to the file

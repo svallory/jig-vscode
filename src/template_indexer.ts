@@ -62,10 +62,10 @@ export class TemplateIndexer {
   }
 
   /**
-   * Create a glob pattern for searching edge files in the given disks
+   * Create a glob pattern for searching jig files in the given disks
    * using fast-glob
    */
-  async #searchEdgeFilesInDisks(normalizedDisks: Record<string, string>) {
+  async #searchJigFilesInDisks(normalizedDisks: Record<string, string>) {
     let diskDirectoriesPattern = Object.values(normalizedDisks)
       .map((disk) => slash(`${disk}`))
       .join(',')
@@ -74,14 +74,14 @@ export class TemplateIndexer {
       diskDirectoriesPattern = `{${diskDirectoriesPattern}}`
     }
 
-    const globPattern = slash(`${diskDirectoriesPattern}/**/**.edge`)
+    const globPattern = slash(`${diskDirectoriesPattern}/**/**.jig`)
     const files = await fg(globPattern, { onlyFiles: true, caseSensitiveMatch: false })
 
     return files.map((file) => slash(file))
   }
 
   /**
-   * Convert the given edge filename to a valid edge Tag Name
+   * Convert the given jig filename to a valid jig Tag Name
    */
   #componentFileNameToTagName(diskPath: string, path: string, disk: string) {
     const diskComponentsPath = slash(join(diskPath, 'components'))
@@ -94,7 +94,7 @@ export class TemplateIndexer {
     if (!isComponent) return null
 
     let componentName = slash(relative(diskComponentsPath, path))
-      .replace('.edge', '')
+      .replace('.jig', '')
       .split('/')
       .map((part) => camelCase(part))
       .join('.')
@@ -108,8 +108,8 @@ export class TemplateIndexer {
     }
 
     /**
-     * If the component is something like `button/index.edge`
-     * we should be able to use it as `@!button()` in Edge
+     * If the component is something like `button/index.jig`
+     * we should be able to use it as `@!button()` in Jig
      * So we remove the `.index` part from the component name
      */
     if (componentName.endsWith('.index')) {
@@ -126,14 +126,14 @@ export class TemplateIndexer {
     if (Object.keys(this.project.disks).length === 0) return []
 
     const disks = this.#normalizeDiskPath(this.project)
-    const matchedFiles = await this.#searchEdgeFilesInDisks(disks)
+    const matchedFiles = await this.#searchJigFilesInDisks(disks)
 
     this.#templates = matchedFiles.map((path) => {
       const [disk, diskPath] = Object.entries(disks).find(([, diskPath]) =>
         path.startsWith(diskPath)
       )!
 
-      const filename = slash(relative(diskPath, path).replace('.edge', ''))
+      const filename = slash(relative(diskPath, path).replace('.jig', ''))
       const name = disk === 'default' ? filename : `${disk}::${filename}`
       const componentName = this.#componentFileNameToTagName(diskPath, path, disk)
 
@@ -148,6 +148,6 @@ export class TemplateIndexer {
       }
     })
 
-    return this.#templates
+    return this.#templates.sort((a, b) => a.name.localeCompare(b.name))
   }
 }

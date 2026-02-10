@@ -6,10 +6,10 @@ import slash from 'slash'
 import { Linker } from '../src/linker'
 import { TemplateIndexer } from '../src/template_indexer'
 
-test.group('Views Linker | .edge', () => {
+test.group('Views Linker | .jig', () => {
   test('works fine', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/layouts/base.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/layouts/base.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -30,7 +30,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     const positions = result.map((r) => r.position)
@@ -47,13 +47,13 @@ test.group('Views Linker | .edge', () => {
     const paths = result.map((r) => r.templatePath)
 
     assert.sameDeepMembers(paths, [
-      slash(join(fs.basePath, 'resources/views/components/button.edge')),
+      slash(join(fs.basePath, 'resources/views/components/button.jig')),
     ])
   })
 
   test('components as tags', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/checkout_form/input.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/checkout_form/input.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -76,7 +76,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     const positions = result.map((r) => r.position)
@@ -98,8 +98,8 @@ test.group('Views Linker | .edge', () => {
   })
 
   test('component as tags without !', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/components/checkout_form/input.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/components/checkout_form/input.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -122,7 +122,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     const positions = result.map((r) => r.position)
@@ -169,7 +169,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     assert.deepEqual(result, [])
@@ -218,7 +218,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     assert.deepEqual(result, [])
@@ -228,7 +228,7 @@ test.group('Views Linker | .edge', () => {
     assert,
     fs,
   }) => {
-    await fs.create('resources/views/components/map/index.edge', '')
+    await fs.create('resources/views/components/map/index.jig', '')
 
     const template = dedent`
       <div>map</div>
@@ -247,7 +247,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     const positions = result.map((r) => r.position)
@@ -258,7 +258,7 @@ test.group('Views Linker | .edge', () => {
     assert,
     fs,
   }) => {
-    await fs.create('resources/views/components/button.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
 
     const template = dedent`
       components/button
@@ -277,7 +277,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     const positions = result.map((r) => r.position)
@@ -288,7 +288,7 @@ test.group('Views Linker | .edge', () => {
     assert,
     fs,
   }) => {
-    await fs.create('resources/views/components/button.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
 
     const template = dedent`
       @!button('foo', { test: route('bar') })
@@ -304,7 +304,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     const positions = result.map((r) => r.position)
@@ -312,7 +312,7 @@ test.group('Views Linker | .edge', () => {
   })
 
   test('should not create link if exact match is not found', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
 
     const template = dedent`
       @component('components')
@@ -328,7 +328,7 @@ test.group('Views Linker | .edge', () => {
     const result = await Linker.getLinks({
       fileContent: template,
       indexer,
-      sourceType: 'edge',
+      sourceType: 'jig',
     })
 
     assert.deepEqual(result, [])
@@ -337,8 +337,8 @@ test.group('Views Linker | .edge', () => {
 
 test.group('Views Linker | .ts', () => {
   test('ts source type', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
-    await fs.create('resources/views/pages/admin.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
+    await fs.create('resources/views/pages/admin.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -380,8 +380,8 @@ test.group('Views Linker | .ts', () => {
     const paths = result.map((r) => r.templatePath)
 
     assert.sameDeepMembers(paths, [
-      slash(join(indexer.project.rootPath, 'resources/views/components/button.edge')),
-      slash(join(indexer.project.rootPath, 'resources/views/pages/admin.edge')),
+      slash(join(indexer.project.rootPath, 'resources/views/components/button.jig')),
+      slash(join(indexer.project.rootPath, 'resources/views/pages/admin.jig')),
     ])
   })
 
@@ -410,7 +410,7 @@ test.group('Views Linker | .ts', () => {
   })
 
   test('match template in ts file in correct position', async ({ assert, fs }) => {
-    await fs.create('resources/views/components/button.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
 
     const indexer = new TemplateIndexer({
       rootPath: fs.basePath,
@@ -440,7 +440,7 @@ test.group('Views Linker | .ts', () => {
     assert,
     fs,
   }) => {
-    await fs.create('resources/views/components/button.edge', '')
+    await fs.create('resources/views/components/button.jig', '')
 
     const template = dedent`
       return view.render('components/button', { prop: route('bar') })

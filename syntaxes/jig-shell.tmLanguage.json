@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig Shell Script",
+  "scopeName": "text.jig.shell",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.shell"
+    }
+  ]
+}

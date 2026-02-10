@@ -1,0 +1,21 @@
+// Example for jig-swift
+function init() {
+  const config = {
+    apiKey: '{{ secrets.apiKey }}',
+    environment: '{{ env }}'
+  };
+
+  @if(debugMode)
+    console.log('Jig is active for jig-swift');
+  @endif
+
+  const list = [
+    @each(val in values)
+      '{{ val }}',
+    @endeach
+  ];
+
+  return config.{{ property }};
+}
+
+{{-- Jig structures interleaved with host language --}}

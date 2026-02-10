@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig C#",
+  "scopeName": "text.jig.csharp",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.cs"
+    }
+  ]
+}

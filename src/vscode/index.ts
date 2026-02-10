@@ -3,15 +3,15 @@ import { IndexerManager } from './indexer_manager'
 import { ExtConfig } from './config'
 import { Logger } from './logger'
 import { TsCompletionProvider } from './providers/ts_completions'
-import { EdgeCompletionProvider } from './providers/edge_completions'
-import { EdgeLinksProvider } from './providers/edge_links'
+import { JigCompletionProvider } from './providers/jig_completions'
+import { JigLinksProvider } from './providers/jig_links'
 import { TsLinksProvider } from './providers/ts_links'
 
 export async function activate(context: ExtensionContext) {
   /**
-   * Re-index projects when a new .edge file has been created/deleted
+   * Re-index projects when a new .jig file has been created/deleted
    */
-  const watcherPattern = new RelativePattern(workspace.workspaceFolders![0]!, '**/*.{edge}')
+  const watcherPattern = new RelativePattern(workspace.workspaceFolders![0]!, '**/*.{jig}')
   const watcher = workspace.createFileSystemWatcher(watcherPattern)
   async function reIndex(file: Uri) {
     Logger.info(`File changed: ${file.fsPath}`)
@@ -37,7 +37,7 @@ export async function activate(context: ExtensionContext) {
     { immediate: true }
   )
 
-  const edgeSelector = [{ language: 'edge', scheme: 'file' }]
+  const jigSelector = [{ language: 'jig', scheme: 'file' }]
   const jsSelectors = [
     { language: 'javascript', scheme: 'file' },
     { language: 'typescript', scheme: 'file' },
@@ -55,15 +55,15 @@ export async function activate(context: ExtensionContext) {
   )
 
   /**
-   * Autocompletion and links for views in Edge files
+   * Autocompletion and links for views in Jig files
    */
-  const edgeLinks = languages.registerDocumentLinkProvider(edgeSelector, new EdgeLinksProvider())
-  const edgeCompletion = languages.registerCompletionItemProvider(
-    edgeSelector,
-    new EdgeCompletionProvider(),
+  const jigLinks = languages.registerDocumentLinkProvider(jigSelector, new JigLinksProvider())
+  const jigCompletion = languages.registerCompletionItemProvider(
+    jigSelector,
+    new JigCompletionProvider(),
     '@',
     '!'
   )
 
-  context.subscriptions.push(viewsCompletion, viewsTsLink, edgeCompletion, edgeLinks)
+  context.subscriptions.push(viewsCompletion, viewsTsLink, jigCompletion, jigLinks)
 }

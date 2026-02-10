@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jig ShaderLab",
+  "scopeName": "text.jig.shaderlab",
+  "patterns": [
+    {
+      "include": "source.jig"
+    },
+    {
+      "include": "source.shaderlab"
+    }
+  ]
+}

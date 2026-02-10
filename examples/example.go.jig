@@ -1,0 +1,22 @@
+package main
+
+import "fmt"
+
+func main() {
+  // Example for jig-go
+  title := "{{ title }}"
+  fmt.Printf("Title: %s\n", title)
+
+  @if(debugMode)
+    fmt.Println("Debug mode is active")
+  @endif
+
+  items := []string{
+    @each(item in items)
+      "{{ item }}",
+    @endeach
+  }
+
+  {{-- Jig comment in Go --}}
+  fmt.Println(items)
+}

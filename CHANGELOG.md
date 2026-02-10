@@ -6,32 +6,32 @@
 
 ## 1.5.0
 
-- Add `htmlLanguageParticipants` to use HTML language server features in Edge files.
+- Add `htmlLanguageParticipants` to use HTML language server features in Jig files.
 
 ## 1.4.0
 
 - Trigger autocompletion for components named as `layout` or `section`.
 - Fix component autocompletion insert text to contain closing statement as well.
 - Trigger components autocompletion when `@!` keywords are used.
-- Fix code comments shortcut to use Edge comment boundaries and not JavaScript comment boundaries.
+- Fix code comments shortcut to use Jig comment boundaries and not JavaScript comment boundaries.
 - Fix folding markers to ignore inline tag names.
 
 ## 1.3.2
 
-- Autocompletion was triggered when using `@section` in `.edge` files
+- Autocompletion was triggered when using `@section` in `.jig` files
 
 ## 1.3.1
 
-- Polishing and fix some issues related to Document Links in .ts and .edge files
+- Polishing and fix some issues related to Document Links in .ts and .jig files
 
 ## 1.3.0
 
 ### Features
 
-- Add support for `components/**/.index.edge`. That means if you have a component in `components/button/index.edge`, completion and links will works for `@button` instead of `@button.index`.
-- Before, in order to show completions, you had to press `ctrl+space`. Now, completions will show automatically when you type `@` or `@.`. Same for `.ts` files, when you will start typing `edge.render`, completions will show automatically.
-- Add Edge built-in tags completions with some links to the documentation in the CompletionItem detail.
-- Use different icons for Edge built-in tags and custom tags.
+- Add support for `components/**/.index.jig`. That means if you have a component in `components/button/index.jig`, completion and links will works for `@button` instead of `@button.index`.
+- Before, in order to show completions, you had to press `ctrl+space`. Now, completions will show automatically when you type `@` or `@.`. Same for `.ts` files, when you will start typing `jig.render`, completions will show automatically.
+- Add Jig built-in tags completions with some links to the documentation in the CompletionItem detail.
+- Use different icons for Jig built-in tags and custom tags.
 
 ## 1.2.0
 
