@@ -1,16 +1,26 @@
 <div align="center">
-  <img src="./banner.png" />
+  <h2>Jig IDE Extensions</h2>
 </div>
 
-<div align="center">
-  <h2> Jig templates extension for VSCode </h2>
-</div>
+<p align="center">
+  <a href="vscode:extension/svallory.jig"><img src="./images/btn-vscode.svg" alt="Install in VS Code" height="48" /></a>&nbsp;&nbsp;
+  <a href="cursor:extension/svallory.jig"><img src="./images/btn-cursor.svg" alt="Install in Cursor" height="48" /></a>&nbsp;&nbsp;
+  <a href="windsurf:extension/svallory.jig"><img src="./images/btn-windsurf.svg" alt="Install in Windsurf" height="48" /></a>
+</p>
+<p align="center">
+  <a href="antigravity:extension/svallory.jig"><img src="./images/btn-antigravity.svg" alt="Install in Antigravity" height="48" /></a>&nbsp;&nbsp;
+  <a href="kiro:extension/svallory.jig"><img src="./images/btn-kiro.svg" alt="Install in Kiro" height="48" /></a>
+</p>
+
+<p align="center">
+  Or install from the command line: <code>code --install-extension svallory.jig</code>
+</p>
 
 <br />
 <hr />
 <br />
 
-This is the official extension for VSCode created by the creators of Jig.js. The extension adds support for the following features.
+This is the official Jig template engine extension. It adds support for the following features.
 
 - Syntax highlighting for both HTML and Jig
 - Code folding for Jig tags
@@ -31,7 +41,7 @@ Following is the list of available configuration options :
 
 ### `jig.disks`
 
-In order to benefit from autocompletion and Go-To links, the extension needs to know the directories hosting your Jig templates. 
+In order to benefit from autocompletion and Go-To links, the extension needs to know the directories hosting your Jig templates.
 
 That's what this option is for : it's an object whose keys are the disk names and values the paths to the template directories, relative to the root of your project.
 
@@ -44,9 +54,11 @@ By default, `jig.disk` has this value:
   }
 }
 ```
+
 This is perfectly suited to AdonisJS projects by default.
 
 If you set up a secondary disk with Jig, like this
+
 ```ts
 const BASE_URL = new URL('./', import.meta.url)
 jig.mount('mydisk', new URL('my/sub/directory', BASE_URL))
@@ -90,6 +102,7 @@ If you want to use Emmet in your Jig templates, you can add the following config
 ```
 
 ## Tags snippets
+
 Following is the list of available snippets
 
 <table>

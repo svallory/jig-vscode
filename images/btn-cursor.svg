@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="56" viewBox="0 0 240 56">
+  <rect width="240" height="56" rx="10" fill="#000000"/>
+  <g transform="translate(30,16)">
+    <path d="M11 22l10-5.6L11 10.8 1 16.4 11 22z" fill="#888"/>
+    <path d="M21 16.4V4.4L11 0v12l10 4.4z" fill="#bbb"/>
+    <path d="M11 0L1 5.6v10.8L11 10.8V0z" fill="#ddd"/>
+    <path d="M21 4.4L11 22V10.8L21 4.4z" fill="#e4e4e4"/>
+    <path d="M21 4.4L11 10.8 1 4.4h20z" fill="white"/>
+  </g>
+  <text x="66" y="34.5" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19" font-weight="600" fill="white">Install in Cursor</text>
+</svg>
