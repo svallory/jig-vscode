@@ -50,9 +50,6 @@ function buildScopeMap(): Map<string, string> {
 
 const scopeMap = buildScopeMap()
 
-/** The embedded-language injection grammar scope */
-const EMBEDDED_INJECTION_SCOPE = 'source.jig.embedded.language'
-
 /**
  * Minimal stub grammars for host languages referenced by Jig grammars.
  *
@@ -77,6 +74,11 @@ const STUB_GRAMMARS: Record<string, object> = {
   },
   'text.html.derivative': {
     scopeName: 'text.html.derivative',
+    patterns: [],
+    repository: {},
+  },
+  'source.json': {
+    scopeName: 'source.json',
     patterns: [],
     repository: {},
   },
@@ -115,17 +117,6 @@ function createRegistry(): vsctm.Registry {
       }
       // Unknown scope
       return Promise.resolve(null)
-    },
-    getInjections(scopeName: string): string[] | undefined {
-      // Don't inject into the injection grammar itself
-      if (scopeName === EMBEDDED_INJECTION_SCOPE) {
-        return undefined
-      }
-      // For source.jig.html, inject the embedded-language override grammar
-      if (scopeName === 'source.jig.html') {
-        return [EMBEDDED_INJECTION_SCOPE]
-      }
-      return undefined
     },
   })
 }

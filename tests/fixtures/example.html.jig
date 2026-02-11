@@ -19,7 +19,7 @@
   {{ escapedHtml }}
   {{{ unescapedHtml }}}
 
-  {{-- :: markdown :: --}}
+  @section('content'): markdown
   # Welcome
 
   This is a **bold** statement and some *italic* text.
@@ -31,5 +31,5 @@
 
   {{ dynamicContent }}
   {{{ escapedDynamicContent }}}
-  {{-- // markdown --}}
+  @end
 </div>

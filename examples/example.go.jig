@@ -1,27 +1,134 @@
-package main
+---
+to: "internal/handler/admin_{{ snakeCase(model) }}_edit.go"
+---
+package handler
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"log/slog"
+	"strings"
 
-{{-- :: markdown :: --}}
-/*
-  # Hello There
-*/
-{{-- // markdown --}}
-func main() {
-  // Example for jig-go
-  title := "{{ title }}"
-  fmt.Printf("Title: %s\n", title)
+	"github.com/hlibco/gostart/internal/model"
+	"github.com/hlibco/gostart/internal/ui"
+	"github.com/hlibco/gostart/internal/ui/pages"
+)
 
-  @if(debugMode)
-    fmt.Println("Debug mode is active")
+type Admin{{ model }}EditHandler struct {
+	adminRepo model.AdminRepository
+}
+
+func NewAdmin{{ model }}EditHandler(
+	adminRepo model.AdminRepository,
+) *Admin{{ model }}EditHandler {
+	return &Admin{{ model }}EditHandler{
+		adminRepo: adminRepo,
+	}
+}
+
+// EditPage handles GET /admin/{{ kebabCase(model) }}/{id}/edit
+func (h *Admin{{ model }}EditHandler) EditPage(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	detail, err := h.adminRepo.Get{{ model }}Detail(r.Context(), id)
+	if err != nil {
+		slog.Error("failed to load {{ snakeCase(model) }} detail", "error", err, "id", id)
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	ui.Render(r.Context(), w, pages.Admin{{ model }}Edit(detail))
+}
+
+// Update handles POST /admin/{{ kebabCase(model) }}/{id}/edit
+func (h *Admin{{ model }}EditHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Invalid form data", http.StatusBadRequest)
+		return
+	}
+
+@ai({ key: 'updateBody' })
+  @context(): markdown
+		Model: {{ model }}
+		Fields: {{ json :: listModelFields(model) }}
+		Update pattern: Parse form values into model.{{ model }}Updates struct, validate, call repository.Update{{ model }}
+		Use r.FormValue("field_name") to extract values, strings.TrimSpace for text fields.
+		For boolean fields (checkboxes/switches), use r.FormValue() == "on" or r.FormValue() != ""
+		For numeric fields, use strconv.Atoi() or strconv.ParseFloat()
+		For date/time fields, use time.Parse()
+		For pointer fields (*string, *int), only set if value is not empty
+		On success: ui.ShowSnackbar(w, "{{ model }} updated successfully")
+		On validation error: ui.ShowSnackbar(w, "error message")
+		On server error: slog.Error + ui.ShowSnackbar(w, "Failed to update {{ snakeCase(model) }}")
   @end
+  @prompt()
+		Write the handler body to update a {{ model }} via the admin panel.
+		1. Extract all editable form values and create a model.{{ model }}Updates struct
+		2. Validate required fields (show snackbar and return if validation fails)
+		3. Call h.adminRepo.Update{{ model }}(r.Context(), id, updates)
+		4. Show appropriate snackbar (success or error)
 
-  items := []string{
-    @each(item in items)
-      "{{ item }}",
+		Include proper type conversions for non-string fields.
+		Use helper variables for clarity.
+		Return only the Go statements (no func signature).
+  @end
+  @output()
+    @example()
+			name := strings.TrimSpace(r.FormValue("name"))
+
+			if name == "" {
+				ui.ShowSnackbar(w, "Name is required")
+				return
+			}
+
+			description := strings.TrimSpace(r.FormValue("description"))
+			var descPtr *string
+
+			if description != "" {
+				descPtr = &description
+			}
+
+			updates := model.{{ model }}Updates{
+				Name:        name,
+				Description: descPtr,
+			}
+
+			if err := h.adminRepo.Update{{ model }}(r.Context(), id, updates); err != nil {
+				slog.Error("failed to update {{ snakeCase(model) }}", "error", err, "id", id)
+				ui.ShowSnackbar(w, "Failed to update {{ snakeCase(model) }}")
+				return
+			}
+
+			ui.ShowSnackbar(w, "{{ model }} updated successfully")
     @end
-  }
+  @end
+@end
+}
 
-  {{-- Jig comment in Go --}}
-  fmt.Println(items)
+// Delete handles DELETE /admin/{{ kebabCase(model) }}/{id}
+func (h *Admin{{ model }}EditHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		http.Error(w, "Not found", http.StatusNotFound)
+		return
+	}
+
+	if err := h.adminRepo.Delete{{ model }}(r.Context(), id); err != nil {
+		slog.Error("failed to delete {{ snakeCase(model) }}", "error", err, "id", id)
+		ui.ShowSnackbar(w, "Failed to delete {{ snakeCase(model) }}")
+		return
+	}
+
+	w.Header().Set("HX-Redirect", "/admin/{{ kebabCase(pluralize(model)) }}")
+	w.WriteHeader(http.StatusOK)
 }

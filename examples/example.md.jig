@@ -18,14 +18,14 @@ This router handles {{ routes.length }} **routes**.
 
 > Quote: {{{ rawQuote }}}
 
-{{-- :: ts :: --}}
+@if(showTypes): ts
 interface Route {
   path: string
   method: 'GET' | 'POST'
 }
 
 const routes: Route[] = []
-{{-- // ts --}}
+@end
 
 ## Footer
 Made by {{ author }}

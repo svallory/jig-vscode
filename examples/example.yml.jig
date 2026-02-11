@@ -12,9 +12,9 @@ settings:
     @each(feature in features)
     - {{ feature }}
     @end
-{{-- :: markdown :: --}}
+@section('readme'): markdown
 # Readme
 This is **bold** markdown
 {{ variable }}
 - list item
-{{-- // markdown --}}
+@end

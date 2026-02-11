@@ -1,0 +1,16 @@
+import { renderMarkdown } from './utils'
+const items = ['one', 'two', 'three']
+@if(useMarkdown): markdown
+# Welcome
+
+This is **bold** text with {{ name }}.
+
+  @if(showDetails)
+  - Detail one
+  - Detail two
+  @end
+@end
+@each(item in items): json
+{ "name": "{{ item }}" }
+@end
+export default items

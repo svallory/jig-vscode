@@ -268,9 +268,8 @@ test.group('Grammar Scopes | Multiline template', () => {
 
 test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
   // Uses the real fixture file with blank lines, leading whitespace, and a
-  // markdown language-override block. This catches regressions where host
-  // grammars' greedy patterns (e.g., markdown's meta.paragraph) swallow Jig
-  // syntax after blank lines.
+  // markdown embed block. This catches regressions where host grammars' greedy
+  // patterns (e.g., markdown's meta.paragraph) swallow Jig syntax after blank lines.
   //
   // Fixture line numbers (0-indexed):
   //  0: <!-- Example for jig-html -->
@@ -294,7 +293,7 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
   // 18:   {{ escapedHtml }}
   // 19:   {{{ unescapedHtml }}}
   // 20:   (blank)
-  // 21:   {{-- :: markdown :: --}}
+  // 21:   @section('content'): markdown    ← tag-based embed open
   // 22:   # Welcome
   // 23:   (blank)
   // 24:   This is a **bold** statement and some *italic* text.
@@ -306,7 +305,7 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
   // 30:   (blank)
   // 31:   {{ dynamicContent }}
   // 32:   {{{ escapedDynamicContent }}}
-  // 33:   {{-- // markdown --}}
+  // 33:   @end                             ← tag-based embed close
   // 34: </div>
 
   const fixtureContent = fs.readFileSync(
@@ -377,34 +376,38 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
     )
   })
 
-  // ------- Markdown block boundaries -------
+  // ------- Markdown embed block boundaries -------
 
-  test('L21: opening marker gets comment.block.jig', async ({ assert }) => {
+  test('L21: @section on embed line gets support.function.jig', async ({ assert }) => {
     const result = await getResult()
-    const tokens = getLineTokens(result, 21)
-    // Leading whitespace + the marker
-    const markerToken = tokens.find((t) => t.text.includes('{{--'))
-    assert.isDefined(markerToken, 'Expected marker token on line 21')
+    const token = getToken(result, 21, "@section")
+    assert.isDefined(token, 'Expected @section token on line 21')
     assert.isTrue(
-      tokenHasScope(markerToken!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(markerToken!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
     )
   })
 
-  test('L33: closing marker gets comment.block.jig, NOT meta.embedded.block.markdown', async ({
+  test('L21: ": markdown" gets storage.type.embedded.jig', async ({ assert }) => {
+    const result = await getResult()
+    const tokens = getLineTokens(result, 21)
+    const langToken = tokens.find((t) => t.text.includes('markdown'))
+    assert.isDefined(langToken, 'Expected language annotation token on line 21')
+    assert.isTrue(
+      tokenHasScope(langToken!, 'storage.type.embedded.jig'),
+      `Missing storage.type.embedded.jig: ${formatScopes(langToken!)}`
+    )
+  })
+
+  test('L33: @end closes embed, NOT inside meta.embedded.block.markdown', async ({
     assert,
   }) => {
     const result = await getResult()
-    const tokens = getLineTokens(result, 33)
-    const markerToken = tokens.find((t) => t.text.includes('{{--'))
-    assert.isDefined(markerToken, 'Expected marker token on line 33')
+    const token = getToken(result, 33, '@end')
+    assert.isDefined(token, 'Expected @end token on line 33')
     assert.isTrue(
-      tokenHasScope(markerToken!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(markerToken!)}`
-    )
-    assert.isTrue(
-      tokenLacksAllScopes(markerToken!, ['meta.embedded.block.markdown']),
-      `Closing marker should not have meta.embedded.block.markdown: ${formatScopes(markerToken!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
     )
   })
 
@@ -444,7 +447,7 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
     )
   })
 
-  test('L31: {{ dynamicContent }} inside markdown (after blank line) gets mustache scopes, NOT meta.paragraph', async ({
+  test('L31: {{ dynamicContent }} inside markdown (after blank line) gets mustache scopes', async ({
     assert,
   }) => {
     const result = await getResult()
@@ -457,10 +460,6 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
         'meta.embedded.block.markdown',
       ]),
       `Missing expected scopes: ${formatScopes(token!)}`
-    )
-    assert.isTrue(
-      tokenLacksAllScopes(token!, ['meta.paragraph.markdown']),
-      `{{ must NOT be swallowed by meta.paragraph.markdown: ${formatScopes(token!)}`
     )
   })
 
@@ -477,10 +476,6 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
       ]),
       `Missing expected scopes: ${formatScopes(token!)}`
     )
-    assert.isTrue(
-      tokenLacksAllScopes(token!, ['meta.paragraph.markdown']),
-      `Content must NOT be inside meta.paragraph.markdown: ${formatScopes(token!)}`
-    )
   })
 
   test('L32: {{{ escapedDynamicContent }}} inside markdown (after {{ }}) gets safe mustache scopes', async ({
@@ -496,10 +491,6 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
         'meta.embedded.block.markdown',
       ]),
       `Missing expected scopes: ${formatScopes(token!)}`
-    )
-    assert.isTrue(
-      tokenLacksAllScopes(token!, ['meta.paragraph.markdown']),
-      `{{{ must NOT be swallowed by meta.paragraph.markdown: ${formatScopes(token!)}`
     )
   })
 
@@ -529,16 +520,22 @@ test.group('Grammar Scopes | Jig YAML grammar (text.jig.yaml)', () => {
   //  1: name: {{ projectName }}
   //  2: version: {{ version }}
   //  3: @if(isEnabled)
-  //  4: enabled: true
+  //  4:   enabled: true
   //  5: @else
-  //  6: enabled: false
+  //  6:   enabled: false
   //  7: @end
   //  8: settings:
   //  9:   theme: {{ theme }}
   // 10:   features:
   // 11:     @each(feature in features)
-  // 12:       - {{ feature }}
+  // 12:     - {{ feature }}
   // 13:     @end
+  // 14: @section('readme'): markdown       ← tag-based embed open
+  // 15: # Readme
+  // 16: This is **bold** markdown
+  // 17: {{ variable }}
+  // 18: - list item
+  // 19: @end                               ← tag-based embed close
 
   const yamlContent = fs.readFileSync(
     path.resolve(__dirname, '../examples/example.yml.jig'),
@@ -668,13 +665,24 @@ test.group('Grammar Scopes | Jig YAML grammar (text.jig.yaml)', () => {
     )
   })
 
-  test('L14: {{-- :: markdown :: --}} gets comment.block.jig (embedded open marker)', async ({ assert }) => {
+  test('L14: @section on embed line gets support.function.jig', async ({ assert }) => {
     const result = await getYamlResult()
-    const token = getToken(result, 14, '{{-- :: markdown :: --}}')
-    assert.isDefined(token, 'Expected {{-- :: markdown :: --}} on line 14')
+    const token = getToken(result, 14, "@section")
+    assert.isDefined(token, 'Expected @section token on line 14')
     assert.isTrue(
-      tokenHasScope(token!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(token!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L14: ": markdown" gets storage.type.embedded.jig', async ({ assert }) => {
+    const result = await getYamlResult()
+    const tokens = getLineTokens(result, 14)
+    const langToken = tokens.find((t) => t.text.includes('markdown'))
+    assert.isDefined(langToken, 'Expected language annotation token on line 14')
+    assert.isTrue(
+      tokenHasScope(langToken!, 'storage.type.embedded.jig'),
+      `Missing storage.type.embedded.jig: ${formatScopes(langToken!)}`
     )
   })
 
@@ -706,13 +714,13 @@ test.group('Grammar Scopes | Jig YAML grammar (text.jig.yaml)', () => {
     )
   })
 
-  test('L19: {{-- // markdown --}} gets comment.block.jig (embedded close marker)', async ({ assert }) => {
+  test('L19: @end closes embed, gets support.function.jig', async ({ assert }) => {
     const result = await getYamlResult()
-    const token = getToken(result, 19, '{{-- // markdown --}}')
-    assert.isDefined(token, 'Expected {{-- // markdown --}} on line 19')
+    const token = getToken(result, 19, '@end')
+    assert.isDefined(token, 'Expected @end on line 19')
     assert.isTrue(
-      tokenHasScope(token!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(token!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
     )
   })
 })
@@ -736,12 +744,20 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
   // 10:   res.json(data)
   // 11: })
   // 12: @end
-  // 13: {{-- :: markdown :: --}}
-  // 14: # API Documentation
-  // 15: This router handles **{{ routes.length }}** routes.
-  // 16: - Supports authentication
-  // 17: {{-- // markdown --}}
-  // 18: export default router
+  // 13: (blank)
+  // 14: @if(true): markdown       ← embed open (tag-based)
+  // 15: # API Documentation
+  // 16: This router handles {{ routes.length }} **routes**.
+  // 17: (blank)
+  // 18: - Supports authentication
+  // 19: (blank)
+  // 20: @if(list)                 ← nested block inside embed
+  // 21: - Supports authentication
+  // 22: @end                      ← closes nested block
+  // 23: (blank)
+  // 24: @end                      ← closes embed
+  // 25: (blank)
+  // 26: export default router
 
   const tsContent = fs.readFileSync(
     path.resolve(__dirname, '../examples/example.ts.jig'),
@@ -805,20 +821,31 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     )
   })
 
-  test('L13: {{-- :: markdown :: --}} gets comment.block.jig (embedded open marker)', async ({ assert }) => {
+  test('L14: @if on embed line gets support.function.jig', async ({ assert }) => {
     const result = await getTsResult()
-    const token = getToken(result, 13, '{{-- :: markdown :: --}}')
-    assert.isDefined(token, 'Expected {{-- :: markdown :: --}} on line 13')
+    const token = getToken(result, 14, '@if')
+    assert.isDefined(token, 'Expected @if on line 14')
     assert.isTrue(
-      tokenHasScope(token!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(token!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
     )
   })
 
-  test('L14: # API Documentation gets markdown heading scope', async ({ assert }) => {
+  test('L14: ": markdown" gets storage.type.embedded.jig', async ({ assert }) => {
     const result = await getTsResult()
-    const token = getToken(result, 14, 'API Documentation')
-    assert.isDefined(token, 'Expected "API Documentation" on line 14')
+    const tokens = getLineTokens(result, 14)
+    const langToken = tokens.find((t) => t.text.includes('markdown'))
+    assert.isDefined(langToken, 'Expected language annotation token on line 14')
+    assert.isTrue(
+      tokenHasScope(langToken!, 'storage.type.embedded.jig'),
+      `Missing storage.type.embedded.jig: ${formatScopes(langToken!)}`
+    )
+  })
+
+  test('L15: # API Documentation gets markdown heading scope inside embed', async ({ assert }) => {
+    const result = await getTsResult()
+    const token = getToken(result, 15, 'API Documentation')
+    assert.isDefined(token, 'Expected "API Documentation" on line 15')
     assert.isTrue(
       tokenHasScope(token!, 'meta.embedded.block.markdown'),
       `Missing meta.embedded.block.markdown: ${formatScopes(token!)}`
@@ -829,43 +856,123 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     )
   })
 
-  test('L15: **bold** inside embedded markdown gets markup.bold scope', async ({ assert }) => {
+  test('L16: **routes** inside embedded markdown gets markup.bold scope', async ({ assert }) => {
     const result = await getTsResult()
-    // "{{ routes.length }}" is inside bold markers but eaten by markdown paragraph
-    // Check the bold delimiters themselves
-    const tokens = getTokens(result, 15, '**')
-    assert.isTrue(tokens.length >= 2, 'Expected at least 2 ** tokens on line 15')
+    const tokens = getTokens(result, 16, '**')
+    assert.isTrue(tokens.length >= 2, 'Expected at least 2 ** tokens on line 16')
     assert.isTrue(
       tokenHasScope(tokens[0], 'markup.bold.markdown'),
       `Missing markup.bold.markdown: ${formatScopes(tokens[0])}`
     )
   })
 
-  test('L17: {{-- // markdown --}} gets comment.block.jig (embedded close marker)', async ({ assert }) => {
+  test('L20: @if(list): inside markdown list continuation gets support.function.jig', async ({ assert }) => {
     const result = await getTsResult()
-    const token = getToken(result, 17, '{{-- // markdown --}}')
-    assert.isDefined(token, 'Expected {{-- // markdown --}} on line 17')
+    const token = getToken(result, 20, '@if')
+    assert.isDefined(token, 'Expected @if token on line 20')
     assert.isTrue(
-      tokenHasScope(token!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(token!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
     )
   })
 
-  test('L18: export default after markdown block gets TypeScript scopes', async ({ assert }) => {
+  test('L21: "-" inside nested @if block gets markdown list scope, not TS arithmetic', async ({ assert }) => {
     const result = await getTsResult()
-    const token = getToken(result, 18, 'export')
-    assert.isDefined(token, 'Expected "export" on line 18')
+    const token = getToken(result, 21, '-')
+    assert.isDefined(token, 'Expected "-" on line 21')
+    assert.isTrue(
+      tokenHasScope(token!, 'punctuation.definition.list.begin.markdown'),
+      `Missing punctuation.definition.list.begin.markdown: ${formatScopes(token!)}`
+    )
+    assert.isTrue(
+      tokenLacksAllScopes(token!, ['keyword.operator.arithmetic.ts']),
+      `Should not have TS arithmetic scope inside markdown embed: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L22: @end for @if(list) still inside markdown embed', async ({ assert }) => {
+    const result = await getTsResult()
+    const tokens = getLineTokens(result, 22)
+    assert.isTrue(tokens.length > 0, 'Expected tokens on line 22')
+    const hasEmbedScope = tokens.some((t) => tokenHasScope(t, 'meta.embedded.block.markdown'))
+    assert.isTrue(hasEmbedScope, 'Indented @end should still be inside markdown embed')
+    const endToken = getToken(result, 22, '@end')
+    assert.isDefined(endToken, 'Expected @end token on line 22')
+    assert.isTrue(
+      tokenHasScope(endToken!, 'support.function.jig'),
+      `Inner @end should get support.function.jig via injection: ${formatScopes(endToken!)}`
+    )
+  })
+
+  test('L24: @if(includeData): json — nested JSON embed inside markdown gets correct scopes', async ({ assert }) => {
+    const result = await getTsResult()
+    const token = getToken(result, 24, '@if')
+    assert.isDefined(token, 'Expected @if token on line 24')
+    assert.isTrue(
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+    const langToken = getToken(result, 24, ': json')
+    assert.isDefined(langToken, 'Expected ": json" on line 24')
+    assert.isTrue(
+      tokenHasScope(langToken!, 'storage.type.embedded.jig'),
+      `Missing storage.type.embedded.jig: ${formatScopes(langToken!)}`
+    )
+  })
+
+  test('L25-L27: JSON content inside nested embed gets meta.embedded.block.json', async ({ assert }) => {
+    const result = await getTsResult()
+    const token = getToken(result, 25, '{')
+    assert.isDefined(token, 'Expected "{" on line 25')
+    assert.isTrue(
+      tokenHasScope(token!, 'meta.embedded.block.json'),
+      `Missing meta.embedded.block.json: ${formatScopes(token!)}`
+    )
+    // Also inside the parent markdown embed
+    assert.isTrue(
+      tokenHasScope(token!, 'meta.embedded.block.markdown'),
+      `Should also have meta.embedded.block.markdown: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L28: @end closes nested JSON embed, still inside markdown', async ({ assert }) => {
+    const result = await getTsResult()
+    const endToken = getToken(result, 28, '@end')
+    assert.isDefined(endToken, 'Expected @end on line 28')
+    assert.isTrue(
+      tokenHasScope(endToken!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(endToken!)}`
+    )
+    assert.isTrue(
+      tokenHasScope(endToken!, 'meta.embedded.block.markdown'),
+      `Should still be inside markdown embed: ${formatScopes(endToken!)}`
+    )
+  })
+
+  test('L30: outer @end closes markdown embed', async ({ assert }) => {
+    const result = await getTsResult()
+    const token = getToken(result, 30, '@end')
+    assert.isDefined(token, 'Expected @end on line 30')
+    assert.isTrue(
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L32: export default after embed block gets TypeScript scopes', async ({ assert }) => {
+    const result = await getTsResult()
+    const token = getToken(result, 32, 'export')
+    assert.isDefined(token, 'Expected "export" on line 32')
     assert.isTrue(
       tokenHasScope(token!, 'keyword.control.export.ts'),
       `Missing keyword.control.export.ts: ${formatScopes(token!)}`
     )
   })
 
-  test('L18: TypeScript resumes after embedded markdown block closes', async ({ assert }) => {
+  test('L32: TypeScript resumes after embedded markdown block closes', async ({ assert }) => {
     const result = await getTsResult()
-    const token = getToken(result, 18, 'router')
-    assert.isDefined(token, 'Expected "router" on line 18')
-    // Should NOT have markdown scope
+    const token = getToken(result, 32, 'router')
+    assert.isDefined(token, 'Expected "router" on line 32')
     assert.isTrue(
       tokenLacksAllScopes(token!, ['meta.embedded.block.markdown']),
       `Should not have markdown scope after block closes: ${formatScopes(token!)}`
@@ -899,14 +1006,14 @@ test.group('Grammar Scopes | Jig Markdown grammar (text.jig.markdown)', () => {
   // 17: (empty)
   // 18: > Quote: {{{ rawQuote }}}
   // 19: (empty)
-  // 20: {{-- :: ts :: --}}
+  // 20: @if(showTypes): ts                ← tag-based embed open
   // 21: interface Route {
   // 22:   path: string
   // 23:   method: 'GET' | 'POST'
   // 24: }
   // 25: (empty)
   // 26: const routes: Route[] = []
-  // 27: {{-- // ts --}}
+  // 27: @end                              ← tag-based embed close
   // 28: (empty)
   // 29: ## Footer
   // 30: Made by {{ author }}
@@ -1013,13 +1120,24 @@ test.group('Grammar Scopes | Jig Markdown grammar (text.jig.markdown)', () => {
     )
   })
 
-  test('L20: {{-- :: ts :: --}} gets comment.block.jig (embedded open marker)', async ({ assert }) => {
+  test('L20: @if on embed line gets support.function.jig', async ({ assert }) => {
     const result = await getMdResult()
-    const token = getToken(result, 20, '{{-- :: ts :: --}}')
-    assert.isDefined(token, 'Expected {{-- :: ts :: --}} on line 20')
+    const token = getToken(result, 20, '@if')
+    assert.isDefined(token, 'Expected @if on line 20')
     assert.isTrue(
-      tokenHasScope(token!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(token!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L20: ": ts" gets storage.type.embedded.jig', async ({ assert }) => {
+    const result = await getMdResult()
+    const tokens = getLineTokens(result, 20)
+    const langToken = tokens.find((t) => t.text.includes('ts'))
+    assert.isDefined(langToken, 'Expected language annotation token on line 20')
+    assert.isTrue(
+      tokenHasScope(langToken!, 'storage.type.embedded.jig'),
+      `Missing storage.type.embedded.jig: ${formatScopes(langToken!)}`
     )
   })
 
@@ -1061,13 +1179,13 @@ test.group('Grammar Scopes | Jig Markdown grammar (text.jig.markdown)', () => {
     )
   })
 
-  test('L27: {{-- // ts --}} gets comment.block.jig (embedded close marker)', async ({ assert }) => {
+  test('L27: @end closes embed, gets support.function.jig', async ({ assert }) => {
     const result = await getMdResult()
-    const token = getToken(result, 27, '{{-- // ts --}}')
-    assert.isDefined(token, 'Expected {{-- // ts --}} on line 27')
+    const token = getToken(result, 27, '@end')
+    assert.isDefined(token, 'Expected @end on line 27')
     assert.isTrue(
-      tokenHasScope(token!, 'comment.block.jig'),
-      `Missing comment.block.jig: ${formatScopes(token!)}`
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
     )
   })
 
@@ -1082,6 +1200,165 @@ test.group('Grammar Scopes | Jig Markdown grammar (text.jig.markdown)', () => {
     assert.isTrue(
       tokenLacksAllScopes(token!, ['meta.embedded.block.ts']),
       `Should not have TS embedded scope after block closes: ${formatScopes(token!)}`
+    )
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Tag-based embed in Jig TypeScript (text.jig.ts)
+// ---------------------------------------------------------------------------
+
+test.group('Grammar Scopes | Tag-based embed in Jig TypeScript', () => {
+  // File layout (0-indexed):
+  //  0: import { renderMarkdown } from './utils'
+  //  1: const items = ['one', 'two', 'three']
+  //  2: @if(useMarkdown): markdown
+  //  3: # Welcome
+  //  4: (empty)
+  //  5: This is **bold** text with {{ name }}.
+  //  6: (empty)
+  //  7:   @if(showDetails)          ← indented nested block
+  //  8:   - Detail one
+  //  9:   - Detail two
+  // 10:   @end                      ← indented @end (does NOT close embed)
+  // 11: @end                        ← closes embed (same indent as opening tag)
+  // 12: @each(item in items): json
+  // 13: { "name": "{{ item }}" }
+  // 14: @end
+  // 15: export default items
+
+  const embedContent = fs.readFileSync(
+    path.resolve(__dirname, '../examples/example-tag-embed.ts.jig'),
+    'utf-8'
+  )
+  let cachedEmbedResult: Awaited<ReturnType<typeof tokenizeContent>> | null = null
+  async function getEmbedResult() {
+    if (!cachedEmbedResult) {
+      cachedEmbedResult = await tokenizeContent('text.jig.ts', embedContent.trimEnd())
+    }
+    return cachedEmbedResult
+  }
+
+  test('L2: @if on embed line gets support.function.jig', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 2, '@if')
+    assert.isDefined(token, 'Expected @if on line 2')
+    assert.isTrue(
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L2: ": markdown" gets storage.type.embedded.jig', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const tokens = getLineTokens(result, 2)
+    const langToken = tokens.find((t) => t.text.includes('markdown'))
+    assert.isDefined(langToken, 'Expected language annotation token on line 2')
+    assert.isTrue(
+      tokenHasScope(langToken!, 'storage.type.embedded.jig'),
+      `Missing storage.type.embedded.jig: ${formatScopes(langToken!)}`
+    )
+  })
+
+  test('L3: # Welcome gets markup.heading + meta.embedded.block.markdown', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 3, '#')
+    assert.isDefined(token, 'Expected # on line 3')
+    assert.isTrue(
+      tokenHasScope(token!, 'meta.embedded.block.markdown'),
+      `Missing meta.embedded.block.markdown: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L5: **bold** gets markup.bold.markdown + meta.embedded.block.markdown', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 5, 'bold')
+    assert.isDefined(token, 'Expected "bold" on line 5')
+    assert.isTrue(
+      tokenHasAllScopes(token!, ['markup.bold.markdown', 'meta.embedded.block.markdown']),
+      `Missing expected scopes: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L5: {{ name }} inline in markdown paragraph gets punctuation.mustache.begin (via injection)', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 5, '{{')
+    assert.isDefined(token, 'Expected {{ on line 5')
+    assert.isTrue(
+      tokenHasScope(token!, 'punctuation.mustache.begin'),
+      `Missing punctuation.mustache.begin: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L7: @if(showDetails) nested inside embed gets support.function.jig', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 7, '@if')
+    assert.isDefined(token, 'Expected @if on line 7')
+    assert.isTrue(
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L10: inner @end (indented) still inside embed — does not close it', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const tokens = getLineTokens(result, 10)
+    assert.isTrue(tokens.length > 0, 'Expected tokens on line 10')
+    // The indented @end does not match the while pattern (which requires same indent as embed)
+    // so it stays inside the embed block
+    const hasEmbedScope = tokens.some((t) => tokenHasScope(t, 'meta.embedded.block.markdown'))
+    assert.isTrue(hasEmbedScope, 'Indented @end should still be inside markdown embed')
+  })
+
+  test('L11: outer @end closes embed — @end gets support.function.jig', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 11, '@end')
+    assert.isDefined(token, 'Expected @end on line 11')
+    assert.isTrue(
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L12: @each on JSON embed line gets support.function.jig', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 12, '@each')
+    assert.isDefined(token, 'Expected @each on line 12')
+    assert.isTrue(
+      tokenHasScope(token!, 'support.function.jig'),
+      `Missing support.function.jig: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L13: content inside JSON embed gets meta.embedded.block.json', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const tokens = getLineTokens(result, 13)
+    assert.isTrue(tokens.length > 0, 'Expected tokens on line 13')
+    const jsonToken = tokens.find((t) => tokenHasScope(t, 'meta.embedded.block.json'))
+    assert.isDefined(jsonToken, 'Expected at least one token with meta.embedded.block.json on line 13')
+  })
+
+  test('L13: {{ item }} inside JSON embed gets punctuation.mustache.begin', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 13, '{{')
+    assert.isDefined(token, 'Expected {{ on line 13')
+    assert.isTrue(
+      tokenHasScope(token!, 'punctuation.mustache.begin'),
+      `Missing punctuation.mustache.begin: ${formatScopes(token!)}`
+    )
+  })
+
+  test('L15: export after embeds gets keyword.control.export.ts, no embedded scopes', async ({ assert }) => {
+    const result = await getEmbedResult()
+    const token = getToken(result, 15, 'export')
+    assert.isDefined(token, 'Expected "export" on line 15')
+    assert.isTrue(
+      tokenHasScope(token!, 'keyword.control.export.ts'),
+      `Missing keyword.control.export.ts: ${formatScopes(token!)}`
+    )
+    assert.isTrue(
+      tokenLacksAllScopes(token!, ['meta.embedded.block.markdown', 'meta.embedded.block.json']),
+      `Should not have embedded scopes after embed blocks close: ${formatScopes(token!)}`
     )
   })
 })

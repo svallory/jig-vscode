@@ -11,9 +11,23 @@ router.{{ route.method }}('{{ route.path }}', async (req, res) => {
   res.json(data)
 })
 @end
-{{-- :: markdown :: --}}
+
+@if(true): markdown
 # API Documentation
 This router handles {{ routes.length }} **routes**.
+
 - Supports authentication
-{{-- // markdown --}}
+
+  @if(list)
+    - Supports authentication
+  @end
+
+  @if(includeData): json
+  {
+    "asdfs": 12345
+  }
+  @end
+
+@end
+
 export default router

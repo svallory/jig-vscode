@@ -117,6 +117,7 @@
     "aliases": ["Jig Markdown"],
     "extensions": [".md.jig"],
     "hostLanguageScope": "text.html.markdown",
+    "hasGreedyContexts": true,
     "overrideAliases": ["md"]
   },
   {

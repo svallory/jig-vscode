@@ -12,9 +12,6 @@ const LANGUAGES_FILE = join(ROOT_DIR, 'scripts', 'languages.json')
 const PACKAGE_JSON_FILE = join(ROOT_DIR, 'package.json')
 const GENERATED_DIR = join(ROOT_DIR, 'syntaxes', 'generated')
 
-const JIG_HTML_SCOPE = 'source.jig.html'
-const EMBEDDED_GRAMMAR_SCOPE = 'source.jig.embedded.language'
-const EMBED_GRAMMAR_SCOPE = 'meta.embedded.jig-languages'
 const FENCED_CODE_BLOCK_SCOPE = 'embedded.jig.codeblock'
 
 /** The pure Jig language — no host grammar, just Jig syntax + embed blocks.
@@ -35,6 +32,8 @@ interface LanguageConfig {
   hostLanguageScope: string
   vscodeLangId?: string
   overrideAliases?: string[]
+  injectionSelector?: string
+  hasGreedyContexts?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -82,7 +81,183 @@ function getScopeKey(lang: LanguageConfig): string {
 }
 
 function getPerLanguageScopeName(lang: LanguageConfig): string {
+  if (lang.id === 'jig-html') return 'source.jig.html'
   return `text.jig.${getShortName(lang)}`
+}
+
+// ---------------------------------------------------------------------------
+// Language alternation for embeds — matches ALL language short names + aliases
+// ---------------------------------------------------------------------------
+
+function buildAllLanguageAlternation(languages: LanguageConfig[]): string {
+  const names: string[] = []
+  for (const lang of languages) {
+    names.push(escapeRegex(getShortName(lang)))
+    for (const alias of lang.overrideAliases ?? []) {
+      names.push(escapeRegex(alias))
+    }
+  }
+  return `(?i:${names.join('|')})`
+}
+
+// ---------------------------------------------------------------------------
+// Embed tag rule generators
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate an embed tag rule for a specific target language.
+ *
+ * For languages with greedy contexts (markdown): uses begin/while at top level.
+ * For non-greedy languages: uses begin/end at top level (allows jig_block inside).
+ *
+ * @param targetLang - the language being embedded
+ * @param injected - if true, uses (^|\G) anchors and begin/while (for markdown injection)
+ */
+function generateEmbedTagRule(
+  targetLang: LanguageConfig,
+  injected: boolean
+): object {
+  const shortName = getShortName(targetLang)
+  const key = getScopeKey(targetLang)
+  const langAlternation = buildLanguageAlternation(targetLang)
+  const hasGreedy = targetLang.hasGreedyContexts === true
+  const hostScope = targetLang.hostLanguageScope
+
+  const anchor = injected ? '(^|\\G)' : '^'
+  // Capture group offset: injected has an extra group for (^|\G)
+  const capOffset = injected ? 1 : 0
+
+  const beginPattern = `${anchor}(\\s*)(@{1,2}(!)?[a-zA-Z._]+\\s{0,2})(\\([^)]*\\))(\\s*:\\s*${langAlternation})\\s*$`
+
+  const beginCaptures: Record<string, object> = {}
+  beginCaptures[String(2 + capOffset)] = { name: 'support.function.jig' }
+  beginCaptures[String(4 + capOffset)] = { name: 'meta.embedded.block.javascript' }
+  beginCaptures[String(5 + capOffset)] = { name: 'storage.type.embedded.jig' }
+
+  // Build inner patterns
+  const patterns: object[] = []
+
+  // Non-greedy, non-injected: can use jig_block to consume nested @tag...@end
+  if (!hasGreedy && !injected) {
+    patterns.push({ include: `#jig_block_${key}` })
+  }
+  patterns.push({ include: 'source.jig' })
+  patterns.push({ include: hostScope })
+
+  // Greedy languages or injected variants always use begin/while
+  if (hasGreedy || injected) {
+    const whilePattern = `${anchor}(?!\\${injected ? '2' : '1'}@end\\s*$)`
+    return {
+      contentName: `meta.embedded.block.${shortName}`,
+      begin: beginPattern,
+      beginCaptures,
+      while: whilePattern,
+      patterns,
+    }
+  }
+
+  // Non-greedy at top level: begin/end
+  return {
+    contentName: `meta.embedded.block.${shortName}`,
+    begin: beginPattern,
+    beginCaptures,
+    end: '^\\s*(@end)\\s*$',
+    endCaptures: {
+      '1': { name: 'support.function.jig' },
+    },
+    patterns,
+  }
+}
+
+/**
+ * Generate a jig_block recursive consumer for a specific host language.
+ * Consumes @tag(...)...@end pairs so inner @end doesn't leak to outer embed.
+ */
+function generateJigBlock(hostScope: string, selfRef: string): object {
+  return {
+    comment: `Consumes @tag(...)...@end pairs (host = ${hostScope})`,
+    begin: '^(\\s*)(@{1,2}(!)?[a-zA-Z._]+\\s{0,2})(\\([^)]*\\))\\s*$',
+    beginCaptures: {
+      '2': { name: 'support.function.jig' },
+      '4': { name: 'meta.embedded.block.javascript' },
+    },
+    end: '^\\s*(@end[a-zA-Z]*)\\s*$',
+    endCaptures: {
+      '1': { name: 'support.function.jig' },
+    },
+    patterns: [
+      { include: `#${selfRef}` },
+      { include: 'source.jig' },
+      { include: hostScope },
+    ],
+  }
+}
+
+/**
+ * Generate the jig_embed_inner_patterns repository entry.
+ * These are inlined Jig patterns with (^|\G) anchors for markdown injection piercing.
+ */
+function generateJigEmbedInnerPatterns(): object {
+  return {
+    comment: 'Jig patterns for use inside embed blocks via injection. Includes all of source.jig\'s patterns inlined so they pierce markdown contexts.',
+    patterns: [
+      {
+        comment: 'Jig comment',
+        begin: '\\{{--',
+        end: '\\--}}',
+        beginCaptures: { '0': { name: 'punctuation.definition.comment.begin.jig' } },
+        endCaptures: { '0': { name: 'punctuation.definition.comment.end.jig' } },
+        name: 'comment.block',
+      },
+      {
+        comment: 'Escaped mustache',
+        begin: '\\@{{',
+        end: '\\}}',
+        beginCaptures: { '0': { name: 'punctuation.definition.comment.begin.jig' } },
+        endCaptures: { '0': { name: 'punctuation.definition.comment.end.jig' } },
+        name: 'comment.block',
+      },
+      {
+        comment: 'Safe mustache',
+        begin: '\\{{{',
+        end: '\\}}}',
+        beginCaptures: { '0': { name: 'punctuation.mustache.begin' } },
+        endCaptures: { '0': { name: 'punctuation.mustache.end' } },
+        name: 'meta.embedded.block.javascript',
+        patterns: [{ include: 'source.ts#expression' }],
+      },
+      {
+        comment: 'Mustache',
+        begin: '\\{{',
+        end: '\\}}',
+        beginCaptures: { '0': { name: 'punctuation.mustache.begin' } },
+        endCaptures: { '0': { name: 'punctuation.mustache.end' } },
+        name: 'meta.embedded.block.javascript',
+        patterns: [{ include: 'source.ts#expression' }],
+      },
+      {
+        comment: 'Non-seekable tag (@end, @else, etc.) — scoping only, no nesting',
+        match: '(^|\\G)(\\s*)((@{1,2})(!)?([a-zA-Z._]+))(~)?$',
+        captures: {
+          '3': { name: 'support.function.jig' },
+        },
+      },
+      {
+        comment: 'Tag with parens — scoping only, no nesting',
+        begin: '(^|\\G)(\\s*)((@{1,2})(!)?([a-zA-Z._]+)(\\s{0,2}))(\\()',
+        beginCaptures: {
+          '3': { name: 'support.function.jig' },
+          '8': { name: 'punctuation.paren.open' },
+        },
+        end: '\\)',
+        endCaptures: {
+          '0': { name: 'punctuation.paren.close' },
+        },
+        name: 'meta.embedded.block.javascript',
+        patterns: [{ include: 'source.ts#expression' }],
+      },
+    ],
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -90,200 +265,114 @@ function getPerLanguageScopeName(lang: LanguageConfig): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Generate a per-language jig-<lang>.tmLanguage.json grammar.
+ * Generate a per-language grammar with full tag-based embed support.
  *
- * Structure:
- *   1. { "include": "meta.embedded.jig-languages" } — cross-language embed blocks
- *   2. { "include": "source.jig" } — Jig patterns (tags, mustache, comments)
- *   3. { "include": "<hostLanguageScope>" } — host language highlighting
+ * Each grammar includes:
+ * - Repository rules: jig_embed_inner_patterns, jig_block, embed_tag_<key>, embed_tag_<key>_injected, jig_block_<key>
+ * - Two injection contexts: primary (L:<scope>) and markdown-piercing (L:meta.embedded.block.markdown)
+ * - Top-level patterns: embed tags → source.jig → host grammar
  */
-function generatePerLanguageGrammar(lang: LanguageConfig): object {
+function generatePerLanguageGrammar(lang: LanguageConfig, allLanguages: LanguageConfig[]): object {
   const shortName = getShortName(lang)
   const scopeName = getPerLanguageScopeName(lang)
+  const isHtml = lang.id === 'jig-html'
+
+  // Build repository
+  const repository: Record<string, any> = {}
+
+  // jig_embed_inner_patterns (shared across all grammars)
+  repository['jig_embed_inner_patterns'] = generateJigEmbedInnerPatterns()
+
+  // jig_block — recursive consumer using this grammar's host language
+  repository['jig_block'] = generateJigBlock(lang.hostLanguageScope, 'jig_block')
+
+  // For each target embed language, generate embed rules
+  const topLevelPatterns: object[] = []
+  const primaryInjectionPatterns: object[] = []
+  const mdInjectionPatterns: object[] = []
+
+  // Track if any target has greedy contexts (for markdown injection)
+  let hasGreedyTarget = false
+
+  for (const targetLang of allLanguages) {
+    const targetKey = getScopeKey(targetLang)
+
+    // embed_tag_<key> — top-level (non-injected) version
+    repository[`embed_tag_${targetKey}`] = generateEmbedTagRule(targetLang, false)
+
+    // embed_tag_<key>_injected — (^|\G) anchored version for markdown injection
+    repository[`embed_tag_${targetKey}_injected`] = generateEmbedTagRule(targetLang, true)
+
+    // jig_block_<key> — recursive block consumer for non-greedy targets
+    if (!targetLang.hasGreedyContexts) {
+      repository[`jig_block_${targetKey}`] = generateJigBlock(
+        targetLang.hostLanguageScope,
+        `jig_block_${targetKey}`
+      )
+    }
+
+    topLevelPatterns.push({ include: `#embed_tag_${targetKey}` })
+    primaryInjectionPatterns.push({ include: `#embed_tag_${targetKey}` })
+    mdInjectionPatterns.push({ include: `#embed_tag_${targetKey}_injected` })
+
+    if (targetLang.hasGreedyContexts) {
+      hasGreedyTarget = true
+    }
+  }
+
+  // Add source.jig to primary injection
+  primaryInjectionPatterns.push({ include: 'source.jig' })
+
+  // Add jig_embed_inner_patterns to markdown injection
+  mdInjectionPatterns.push({ include: '#jig_embed_inner_patterns' })
+
+  // Top-level patterns: embed tags → source.jig → host grammar(s)
+  topLevelPatterns.push({ include: 'source.jig' })
+  if (isHtml) {
+    topLevelPatterns.push({ include: 'text.html.basic' })
+    topLevelPatterns.push({ include: 'text.html.derivative' })
+  } else {
+    topLevelPatterns.push({ include: lang.hostLanguageScope })
+  }
+
+  // Build injection selectors
+  const injections: Record<string, object> = {}
+
+  // Primary injection
+  let primarySelector: string
+  if (isHtml) {
+    // jig-html needs a more complex injection selector
+    primarySelector = [
+      `${scopeName} - (meta.embedded | meta.tag | comment.block.jig)`,
+      `L:(${scopeName} meta.tag - (comment.block.jig | meta.embedded.block.jig))`,
+      `L:(source.ts.embedded.html - (comment.block.jig | meta.embedded.block.jig))`,
+    ].join(', ')
+  } else {
+    primarySelector =
+      lang.injectionSelector ??
+      `L:${scopeName} - (comment.block | comment.block.jig | meta.embedded)`
+  }
+
+  injections[primarySelector] = {
+    patterns: primaryInjectionPatterns,
+  }
+
+  // Markdown-piercing injection (only if markdown is a supported embed target)
+  if (hasGreedyTarget) {
+    injections['L:meta.embedded.block.markdown - (comment.block | comment.block.jig)'] = {
+      comment: 'Pierce markdown greedy contexts (paragraph, list) so Jig embed tags, tags, and mustache still highlight.',
+      patterns: mdInjectionPatterns,
+    }
+  }
 
   return {
     name: `jig-${shortName}`,
     scopeName,
-    comment: `${lang.aliases[0] ?? `Jig ${shortName}`} Templates`,
+    comment: `${lang.aliases[0] ?? `Jig ${shortName}`} Templates — auto-generated by scripts/generate-grammars.ts`,
     fileTypes: lang.extensions.map((ext) => ext.replace(/^\./, '')),
-    patterns: [
-      { include: EMBED_GRAMMAR_SCOPE },
-      { include: 'source.jig' },
-      { include: lang.hostLanguageScope },
-    ],
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Embed grammar generation (cross-language blocks)
-// ---------------------------------------------------------------------------
-
-/**
- * Generate the embed.tmLanguage.json grammar.
- *
- * This grammar is a pattern library with scope `meta.embedded.jig-languages`.
- * For each language, it defines an `embedded_<key>` repository rule that matches
- * the language override markers ({{-- :: lang :: --}} / {{-- // lang --}}) and
- * delegates content highlighting to the corresponding per-language jig grammar
- * (text.jig.<lang>).
- *
- * Per-language grammars include this grammar as their first pattern, so that any
- * jig file can embed blocks of any other supported language.
- */
-function generateEmbedGrammar(languages: LanguageConfig[]): object {
-  const repository: Record<string, any> = {}
-  const topLevelPatterns: any[] = []
-
-  for (const lang of languages) {
-    const shortName = getShortName(lang)
-    const key = getScopeKey(lang)
-    const langAlternation = buildLanguageAlternation(lang)
-    const perLangScope = getPerLanguageScopeName(lang)
-
-    const embeddedRuleKey = `embedded_${key}`
-    topLevelPatterns.push({ include: `#${embeddedRuleKey}` })
-
-    const beginPattern = `\\{\\{--\\s*::\\s*${langAlternation}\\s*::\\s*--\\}\\}`
-    const endPattern = `^\\s*\\{\\{--\\s*//\\s*${langAlternation}\\s*--\\}\\}`
-
-    repository[embeddedRuleKey] = {
-      contentName: `meta.embedded.block.${shortName}`,
-      begin: beginPattern,
-      end: endPattern,
-      beginCaptures: {
-        '0': { name: 'comment.block.jig' },
-      },
-      endCaptures: {
-        '0': { name: 'comment.block.jig' },
-      },
-      patterns: [{ include: perLangScope }],
-    }
-  }
-
-  return {
-    scopeName: EMBED_GRAMMAR_SCOPE,
+    injections,
     patterns: topLevelPatterns,
     repository,
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Injection grammar generation (for jig-html)
-// ---------------------------------------------------------------------------
-
-/** Jig repository patterns included BEFORE host language grammars in the
- * injection grammar (for jig-html). These use line-anchored wrappers for
- * patterns that don't anchor at ^, plus direct includes from jig-html. */
-const JIG_REPOSITORY_PATTERNS = [
-  '#jig_line_comment',
-  '#jig_line_escapedMustache',
-  '#jig_line_safeMustache',
-  '#jig_line_mustache',
-  `${JIG_HTML_SCOPE}#comment`,
-  `${JIG_HTML_SCOPE}#escapedMustache`,
-  `${JIG_HTML_SCOPE}#safeMustache`,
-  `${JIG_HTML_SCOPE}#mustache`,
-  `${JIG_HTML_SCOPE}#nonSeekableTag`,
-  `${JIG_HTML_SCOPE}#tag`,
-]
-
-function buildLineAnchoredPatterns(languages: LanguageConfig[]): Record<string, object> {
-  const langNames: string[] = []
-  for (const lang of languages) {
-    langNames.push(escapeRegex(getShortName(lang)))
-    for (const alias of lang.overrideAliases ?? []) {
-      langNames.push(escapeRegex(alias))
-    }
-  }
-
-  return {
-    jig_line_comment: {
-      begin: `^\\s*(?=\\{\\{--(?!\\s*(?:::|//)\\s*(?i:${langNames.join('|')})))`,
-      end: '(?<=--\\}\\})',
-      patterns: [{ include: `${JIG_HTML_SCOPE}#comment` }],
-    },
-    jig_line_escapedMustache: {
-      begin: '^\\s*(?=@\\{\\{)',
-      end: '(?<=\\}\\})',
-      patterns: [{ include: `${JIG_HTML_SCOPE}#escapedMustache` }],
-    },
-    jig_line_safeMustache: {
-      begin: '^\\s*(?=\\{\\{\\{)',
-      end: '(?<=\\}\\}\\})',
-      patterns: [{ include: `${JIG_HTML_SCOPE}#safeMustache` }],
-    },
-    jig_line_mustache: {
-      begin: '^\\s*(?=\\{\\{[^{-])',
-      end: '(?<=\\}\\})',
-      patterns: [{ include: `${JIG_HTML_SCOPE}#mustache` }],
-    },
-  }
-}
-
-function generateInjectionGrammar(languages: LanguageConfig[]) {
-  const repository: Record<string, any> = {}
-  const topLevelPatterns: any[] = []
-  const embeddedScopes: string[] = []
-
-  for (const lang of languages) {
-    const shortName = getShortName(lang)
-    const key = getScopeKey(lang)
-    const langAlternation = buildLanguageAlternation(lang)
-    const embeddedScope = `meta.embedded.block.${shortName}`
-
-    embeddedScopes.push(embeddedScope)
-
-    const embeddedRuleKey = `embedded_${key}`
-    topLevelPatterns.push({ include: `#${embeddedRuleKey}` })
-
-    const beginPattern = `\\{\\{--\\s*::\\s*${langAlternation}\\s*::\\s*--\\}\\}`
-    const endPattern = `^\\s*\\{\\{--\\s*//\\s*${langAlternation}\\s*--\\}\\}`
-
-    repository[embeddedRuleKey] = {
-      begin: beginPattern,
-      end: endPattern,
-      beginCaptures: {
-        '0': { name: 'comment.block.jig' },
-      },
-      endCaptures: {
-        '0': { name: 'comment.block.jig' },
-      },
-      contentName: embeddedScope,
-      patterns: [
-        ...JIG_REPOSITORY_PATTERNS.map((p) => ({ include: p })),
-        { include: lang.hostLanguageScope },
-      ],
-    }
-  }
-
-  const exclusions = embeddedScopes.map((s) => ` - ${s}`).join('')
-  const injectionSelector = `L:${JIG_HTML_SCOPE}${exclusions}`
-
-  const embeddedLanguages: Record<string, string> = {}
-  const tokenTypes: Record<string, string> = {}
-  for (const lang of languages) {
-    const shortName = getShortName(lang)
-    const scope = `meta.embedded.block.${shortName}`
-    embeddedLanguages[scope] = resolveVscodeLangId(lang)
-    tokenTypes[scope] = 'other'
-  }
-
-  const lineAnchoredPatterns = buildLineAnchoredPatterns(languages)
-  for (const [key, pattern] of Object.entries(lineAnchoredPatterns)) {
-    repository[key] = pattern
-  }
-
-  return {
-    grammar: {
-      $schema: 'https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json',
-      name: 'Jig Embedded Language Overrides',
-      scopeName: EMBEDDED_GRAMMAR_SCOPE,
-      injectionSelector,
-      patterns: topLevelPatterns,
-      repository,
-    },
-    embeddedLanguages,
-    tokenTypes,
   }
 }
 
@@ -354,7 +443,6 @@ function generateFencedCodeBlockGrammar(languages: LanguageConfig[]) {
   )
 
   // Per-language: ```jig-ts, ```jig-go, ```jig-html, etc.
-  // Also match the full language ID as well as jig-<aliases>
   for (const lang of languages) {
     const shortName = getShortName(lang)
     const key = getScopeKey(lang)
@@ -366,8 +454,7 @@ function generateFencedCodeBlockGrammar(languages: LanguageConfig[]) {
     }
     const nameAlternation = names.map(escapeRegex).join('|')
 
-    // jig-html uses source.jig.html, all others use text.jig.<shortName>
-    const grammarScope = lang.id === 'jig-html' ? JIG_HTML_SCOPE : getPerLanguageScopeName(lang)
+    const grammarScope = getPerLanguageScopeName(lang)
 
     addFencedRule(
       key,
@@ -404,67 +491,65 @@ function generateFencedCodeBlockGrammar(languages: LanguageConfig[]) {
 
 /**
  * Marker scope names for grammar entries that the script manages.
- * Everything else in grammars[] is left untouched (e.g., source.jig, source.jig.html).
+ * Everything else in grammars[] is left untouched (e.g., source.jig).
  */
 const MANAGED_SCOPES = new Set([
-  EMBEDDED_GRAMMAR_SCOPE,
-  EMBED_GRAMMAR_SCOPE,
   FENCED_CODE_BLOCK_SCOPE,
 ])
 
 function updatePackageJson(
   languages: LanguageConfig[],
-  injectionEmbeddedLanguages: Record<string, string>,
-  injectionTokenTypes: Record<string, string>,
   fencedEmbeddedLanguages: Record<string, string>,
   fencedTokenTypes: Record<string, string>
 ) {
   const packageJson = readJSON(PACKAGE_JSON_FILE)
 
   // --- Languages ---
-  // Keep hand-crafted language entries (jig-html), replace/add generated ones
-  const handCraftedLanguages = (packageJson.contributes.languages as any[]).filter(
-    (l: any) => l.id === 'jig-html'
-  )
+  // Keep only non-generated entries (none currently — we generate everything)
   const pureJigLanguage = {
     id: PURE_JIG_LANG.id,
     aliases: ['Jig'],
     extensions: ['.jig'],
     configuration: './language-configuration.json',
   }
-  const generatedLanguages = languages
-    .filter((l) => l.id !== 'jig-html')
-    .map((lang) => ({
+
+  // jig-html gets special aliases treatment
+  const generatedLanguages = languages.map((lang) => {
+    const entry: any = {
       id: lang.id,
       aliases: [lang.aliases[0] ?? lang.id, lang.id],
       extensions: lang.extensions,
       configuration: './language-configuration.json',
-    }))
-  packageJson.contributes.languages = [...handCraftedLanguages, pureJigLanguage, ...generatedLanguages]
+    }
+    return entry
+  })
+  packageJson.contributes.languages = [pureJigLanguage, ...generatedLanguages]
 
   // --- Grammars ---
-  // Keep hand-crafted grammar entries, replace managed ones
-  // Build the set of all scope names and language IDs the script manages
+  // Build the set of all scope names the script manages
   const managedScopeNames = new Set<string>([
     ...MANAGED_SCOPES,
     PURE_JIG_LANG.scopeName,
-    ...languages.filter((l) => l.id !== 'jig-html').map(getPerLanguageScopeName),
+    ...languages.map(getPerLanguageScopeName),
   ])
   const managedLanguageIds = new Set<string>([
     PURE_JIG_LANG.id,
-    ...languages.filter((l) => l.id !== 'jig-html').map((l) => l.id),
+    ...languages.map((l) => l.id),
   ])
-  // Also catch stale grammar entries for languages no longer in languages.json
-  // (any grammar with language starting with "jig-" that we don't manage is stale)
-  const isStaleGrammar = (g: any) =>
-    g.language?.startsWith('jig-') &&
-    g.language !== 'jig-html' &&
-    !managedLanguageIds.has(g.language)
+
+  // Also remove old stale scopes
+  const oldScopes = new Set([
+    'meta.embedded.jig-languages',
+    'source.jig.embedded.language',
+  ])
+
   const handCraftedGrammars = (packageJson.contributes.grammars as any[]).filter(
     (g: any) =>
       !managedScopeNames.has(g.scopeName) &&
       !managedLanguageIds.has(g.language) &&
-      !isStaleGrammar(g)
+      !oldScopes.has(g.scopeName) &&
+      // Remove stale jig- grammars
+      !(g.language?.startsWith('jig-') && !managedLanguageIds.has(g.language))
   )
 
   const generatedGrammars: any[] = []
@@ -476,31 +561,27 @@ function updatePackageJson(
     path: './syntaxes/jig.tmLanguage.json',
   })
 
-  // Per-language grammar entries (no embeddedLanguages/tokenTypes)
+  // Build embeddedLanguages map used across all per-language grammars
+  const embeddedLanguagesMap: Record<string, string> = {}
+  const tokenTypesMap: Record<string, string> = {}
+  for (const targetLang of languages) {
+    const targetShortName = getShortName(targetLang)
+    const scope = `meta.embedded.block.${targetShortName}`
+    embeddedLanguagesMap[scope] = resolveVscodeLangId(targetLang)
+    tokenTypesMap[scope] = 'other'
+  }
+
+  // Per-language grammar entries (all languages including jig-html)
   for (const lang of languages) {
-    if (lang.id === 'jig-html') continue
     const shortName = getShortName(lang)
     generatedGrammars.push({
       language: lang.id,
       scopeName: getPerLanguageScopeName(lang),
       path: `./syntaxes/generated/jig-${shortName}.tmLanguage.json`,
+      embeddedLanguages: { ...embeddedLanguagesMap },
+      tokenTypes: { ...tokenTypesMap },
     })
   }
-
-  // Embed grammar (pattern library for cross-language blocks)
-  generatedGrammars.push({
-    scopeName: EMBED_GRAMMAR_SCOPE,
-    path: './syntaxes/generated/embed.tmLanguage.json',
-  })
-
-  // Injection grammar (for jig-html)
-  generatedGrammars.push({
-    scopeName: EMBEDDED_GRAMMAR_SCOPE,
-    path: './syntaxes/generated/jig-embedded-languages.tmLanguage.json',
-    injectTo: [JIG_HTML_SCOPE],
-    embeddedLanguages: injectionEmbeddedLanguages,
-    tokenTypes: injectionTokenTypes,
-  })
 
   // Fenced code block injection (for Markdown)
   generatedGrammars.push({
@@ -523,42 +604,25 @@ function updatePackageJson(
 function main() {
   console.log('Reading languages configuration...')
   const languages: LanguageConfig[] = readJSON(LANGUAGES_FILE)
-  const nonHtmlLanguages = languages.filter((l) => l.id !== 'jig-html')
 
   mkdirSync(GENERATED_DIR, { recursive: true })
 
-  // 1. Generate per-language grammars
-  console.log('Generating per-language grammars...')
+  // 1. Generate per-language grammars (ALL languages including jig-html)
+  console.log('Generating per-language grammars with tag-based embeds...')
   const generatedFiles = new Set<string>()
 
-  for (const lang of nonHtmlLanguages) {
+  for (const lang of languages) {
     const shortName = getShortName(lang)
     const fileName = `jig-${shortName}.tmLanguage.json`
     const filePath = join(GENERATED_DIR, fileName)
-    const grammar = generatePerLanguageGrammar(lang)
+    const grammar = generatePerLanguageGrammar(lang, languages)
     writeFileSync(filePath, JSON.stringify(grammar, null, 2))
     generatedFiles.add(fileName)
   }
 
-  console.log(`Generated ${nonHtmlLanguages.length} per-language grammars`)
+  console.log(`Generated ${languages.length} per-language grammars`)
 
-  // 2. Generate embed grammar (cross-language blocks)
-  console.log('Generating embed grammar...')
-  const embedFileName = 'embed.tmLanguage.json'
-  const embedGrammar = generateEmbedGrammar(nonHtmlLanguages)
-  writeFileSync(join(GENERATED_DIR, embedFileName), JSON.stringify(embedGrammar, null, 2))
-  generatedFiles.add(embedFileName)
-
-  // 3. Generate injection grammar (for jig-html)
-  console.log('Generating injection grammar for jig-html...')
-  const injectionFileName = 'jig-embedded-languages.tmLanguage.json'
-  const { grammar: injectionGrammar, embeddedLanguages, tokenTypes } =
-    generateInjectionGrammar(languages)
-  writeFileSync(join(GENERATED_DIR, injectionFileName), JSON.stringify(injectionGrammar, null, 2))
-  generatedFiles.add(injectionFileName)
-  console.log(`Generated ${injectionFileName} with ${languages.length} language rules`)
-
-  // 4. Generate fenced code block injection (for Markdown)
+  // 2. Generate fenced code block injection (for Markdown)
   console.log('Generating fenced code block injection grammar...')
   const fencedFileName = 'embedded.jig.tmLanguage.json'
   const {
@@ -570,7 +634,7 @@ function main() {
   generatedFiles.add(fencedFileName)
   console.log(`Generated ${fencedFileName}`)
 
-  // 5. Clean stale files from generated/
+  // 3. Clean stale files from generated/
   if (existsSync(GENERATED_DIR)) {
     const existingFiles = readdirSync(GENERATED_DIR)
     for (const file of existingFiles) {
@@ -582,9 +646,9 @@ function main() {
     }
   }
 
-  // 6. Update package.json
+  // 4. Update package.json
   console.log('Updating package.json...')
-  updatePackageJson(languages, embeddedLanguages, tokenTypes, fencedEmbeddedLanguages, fencedTokenTypes)
+  updatePackageJson(languages, fencedEmbeddedLanguages, fencedTokenTypes)
   console.log('package.json updated!')
 
   console.log('Done!')
