@@ -3,13 +3,13 @@
 </div>
 
 <p align="center">
-  <a href="vscode:extension/svallory.jig"><img src="./images/btn-vscode.svg" alt="Install in VS Code" height="48" /></a>&nbsp;&nbsp;
-  <a href="cursor:extension/svallory.jig"><img src="./images/btn-cursor.svg" alt="Install in Cursor" height="48" /></a>&nbsp;&nbsp;
-  <a href="windsurf:extension/svallory.jig"><img src="./images/btn-windsurf.svg" alt="Install in Windsurf" height="48" /></a>
+  <a href="vscode:extension/svallory.jig"><img src="./images/btn-vscode.png" alt="Install in VS Code" height="48" /></a>&nbsp;&nbsp;
+  <a href="cursor:extension/svallory.jig"><img src="./images/btn-cursor.png" alt="Install in Cursor" height="48" /></a>&nbsp;&nbsp;
+  <a href="windsurf:extension/svallory.jig"><img src="./images/btn-windsurf.png" alt="Install in Windsurf" height="48" /></a>
 </p>
 <p align="center">
-  <a href="antigravity:extension/svallory.jig"><img src="./images/btn-antigravity.svg" alt="Install in Antigravity" height="48" /></a>&nbsp;&nbsp;
-  <a href="kiro:extension/svallory.jig"><img src="./images/btn-kiro.svg" alt="Install in Kiro" height="48" /></a>
+  <a href="antigravity:extension/svallory.jig"><img src="./images/btn-antigravity.png" alt="Install in Antigravity" height="48" /></a>&nbsp;&nbsp;
+  <a href="kiro:extension/svallory.jig"><img src="./images/btn-kiro.png" alt="Install in Kiro" height="48" /></a>
 </p>
 
 <p align="center">
