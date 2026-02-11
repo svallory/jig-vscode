@@ -1,10 +1,10 @@
 # Example for jig-yaml
 name: {{ projectName }}
 version: {{ version }}
-enabled: @if(isEnabled) true @else false @endif
+enabled: @if(isEnabled) true @else false @end
 settings:
   theme: {{ theme }}
   features:
     @each(feature in features)
       - {{ feature }}
-    @endeach
+    @end

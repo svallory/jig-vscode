@@ -1,13 +1,13 @@
 {
   "name": "{{ projectName }}",
   "version": "{{ version }}",
-  "enabled": @if(isEnabled) true @else false @endif,
+  "enabled": @if(isEnabled) true @else false @end,
   "settings": {
     "theme": "{{ theme }}",
     "features": [
       @each(feature in features)
-        "{{ feature }}"@if(!loop.last),@endif
-      @endeach
+        "{{ feature }}"@if(!loop.last),@end
+      @end
     ]
   }
 }

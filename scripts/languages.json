@@ -15,13 +15,17 @@
     "id": "jig-js",
     "aliases": ["Jig JavaScript"],
     "extensions": [".js.jig"],
-    "hostLanguageScope": "source.js"
+    "hostLanguageScope": "source.js",
+    "vscodeLangId": "javascript",
+    "overrideAliases": ["javascript", "es6"]
   },
   {
     "id": "jig-ts",
     "aliases": ["Jig TypeScript"],
     "extensions": [".ts.jig"],
-    "hostLanguageScope": "source.ts"
+    "hostLanguageScope": "source.ts",
+    "vscodeLangId": "typescript",
+    "overrideAliases": ["typescript"]
   },
   {
     "id": "jig-json",
@@ -33,13 +37,15 @@
     "id": "jig-jsx",
     "aliases": ["Jig JSX"],
     "extensions": [".jsx.jig"],
-    "hostLanguageScope": "source.js.jsx"
+    "hostLanguageScope": "source.js.jsx",
+    "vscodeLangId": "javascriptreact"
   },
   {
     "id": "jig-tsx",
     "aliases": ["Jig TSX"],
     "extensions": [".tsx.jig"],
-    "hostLanguageScope": "source.tsx"
+    "hostLanguageScope": "source.tsx",
+    "vscodeLangId": "typescriptreact"
   },
   {
     "id": "jig-c",
@@ -51,13 +57,15 @@
     "id": "jig-cpp",
     "aliases": ["Jig C++"],
     "extensions": [".cpp.jig", ".h.jig"],
-    "hostLanguageScope": "source.cpp"
+    "hostLanguageScope": "source.cpp",
+    "overrideAliases": ["c++", "cxx"]
   },
   {
     "id": "jig-csharp",
     "aliases": ["Jig C#"],
     "extensions": [".cs.jig"],
-    "hostLanguageScope": "source.cs"
+    "hostLanguageScope": "source.cs",
+    "overrideAliases": ["c#", "cs"]
   },
   {
     "id": "jig-dart",
@@ -81,7 +89,9 @@
     "id": "jig-go",
     "aliases": ["Jig Go"],
     "extensions": [".go.jig"],
-    "hostLanguageScope": "source.go"
+    "hostLanguageScope": "source.go",
+    "embeddedLanguages": ["text.html.markdown"],
+    "overrideAliases": ["golang"]
   },
   {
     "id": "jig-java",
@@ -93,7 +103,8 @@
     "id": "jig-julia",
     "aliases": ["Jig Julia"],
     "extensions": [".jl.jig"],
-    "hostLanguageScope": "source.julia"
+    "hostLanguageScope": "source.julia",
+    "overrideAliases": ["jl"]
   },
   {
     "id": "jig-less",
@@ -105,7 +116,15 @@
     "id": "jig-markdown",
     "aliases": ["Jig Markdown"],
     "extensions": [".md.jig"],
-    "hostLanguageScope": "text.html.markdown"
+    "hostLanguageScope": "text.html.markdown",
+    "overrideAliases": ["md"]
+  },
+  {
+    "id": "jig-yaml",
+    "aliases": ["Jig YAML"],
+    "extensions": [".yml.jig", ".yaml.jig"],
+    "hostLanguageScope": "source.yaml.embedded",
+    "overrideAliases": ["yml"]
   },
   {
     "id": "jig-php",
@@ -117,13 +136,15 @@
     "id": "jig-powershell",
     "aliases": ["Jig PowerShell"],
     "extensions": [".ps1.jig"],
-    "hostLanguageScope": "source.powershell"
+    "hostLanguageScope": "source.powershell",
+    "overrideAliases": ["ps1", "pwsh"]
   },
   {
     "id": "jig-python",
     "aliases": ["Jig Python"],
     "extensions": [".py.jig"],
-    "hostLanguageScope": "source.python"
+    "hostLanguageScope": "source.python",
+    "overrideAliases": ["py"]
   },
   {
     "id": "jig-r",
@@ -135,13 +156,15 @@
     "id": "jig-ruby",
     "aliases": ["Jig Ruby"],
     "extensions": [".rb.jig"],
-    "hostLanguageScope": "source.ruby"
+    "hostLanguageScope": "source.ruby",
+    "overrideAliases": ["rb"]
   },
   {
     "id": "jig-rust",
     "aliases": ["Jig Rust"],
     "extensions": [".rs.jig"],
-    "hostLanguageScope": "source.rust"
+    "hostLanguageScope": "source.rust",
+    "overrideAliases": ["rs"]
   },
   {
     "id": "jig-scss",
@@ -153,7 +176,9 @@
     "id": "jig-shell",
     "aliases": ["Jig Shell Script"],
     "extensions": [".sh.jig"],
-    "hostLanguageScope": "source.shell"
+    "hostLanguageScope": "source.shell",
+    "vscodeLangId": "shellscript",
+    "overrideAliases": ["sh", "bash", "zsh"]
   },
   {
     "id": "jig-sql",
@@ -174,12 +199,6 @@
     "hostLanguageScope": "text.xml"
   },
   {
-    "id": "jig-yaml",
-    "aliases": ["Jig YAML"],
-    "extensions": [".yaml.jig", ".yml.jig"],
-    "hostLanguageScope": "source.yaml"
-  },
-  {
     "id": "jig-lua",
     "aliases": ["Jig Lua"],
     "extensions": [".lua.jig"],
@@ -189,7 +208,8 @@
     "id": "jig-perl",
     "aliases": ["Jig Perl"],
     "extensions": [".pl.jig"],
-    "hostLanguageScope": "source.perl"
+    "hostLanguageScope": "source.perl",
+    "overrideAliases": ["pl"]
   },
   {
     "id": "jig-groovy",
@@ -201,31 +221,29 @@
     "id": "jig-bat",
     "aliases": ["Jig Bat"],
     "extensions": [".bat.jig"],
-    "hostLanguageScope": "source.batchfile"
+    "hostLanguageScope": "source.batchfile",
+    "overrideAliases": ["batch", "cmd"]
   },
   {
     "id": "jig-clojure",
     "aliases": ["Jig Clojure"],
     "extensions": [".clj.jig"],
-    "hostLanguageScope": "source.clojure"
+    "hostLanguageScope": "source.clojure",
+    "overrideAliases": ["clj"]
   },
   {
     "id": "jig-coffee",
     "aliases": ["Jig CoffeeScript"],
     "extensions": [".coffee.jig"],
-    "hostLanguageScope": "source.coffee"
+    "hostLanguageScope": "source.coffee",
+    "vscodeLangId": "coffeescript",
+    "overrideAliases": ["coffeescript"]
   },
   {
     "id": "jig-diff",
     "aliases": ["Jig Diff"],
     "extensions": [".diff.jig"],
     "hostLanguageScope": "source.diff"
-  },
-  {
-    "id": "jig-git-ignore",
-    "aliases": ["Jig Git Ignore"],
-    "extensions": [".gitignore.jig"],
-    "hostLanguageScope": "source.ignore"
   },
   {
     "id": "jig-makefile",
@@ -237,13 +255,15 @@
     "id": "jig-objc",
     "aliases": ["Jig Objective-C"],
     "extensions": [".m.jig"],
-    "hostLanguageScope": "source.objc"
+    "hostLanguageScope": "source.objc",
+    "vscodeLangId": "objective-c"
   },
   {
     "id": "jig-objcpp",
     "aliases": ["Jig Objective-C++"],
     "extensions": [".mm.jig"],
-    "hostLanguageScope": "source.objcpp"
+    "hostLanguageScope": "source.objcpp",
+    "vscodeLangId": "objective-cpp"
   },
   {
     "id": "jig-shaderlab",

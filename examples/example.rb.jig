@@ -5,12 +5,12 @@ def main
 
   @if(debugMode)
     puts "Debug mode is active"
-  @endif
+  @end
 
   items = [
     @each(item in items)
       "{{ item }}",
-    @endeach
+    @end
   ]
 
   {{-- Jig comment in Ruby --}}

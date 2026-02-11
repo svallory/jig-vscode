@@ -1,10 +1,20 @@
 # Example for jig-yaml
 name: {{ projectName }}
 version: {{ version }}
-enabled: @if(isEnabled) true @else false @endif
+@if(isEnabled)
+  enabled: true
+@else
+  enabled: false
+@end
 settings:
   theme: {{ theme }}
   features:
     @each(feature in features)
-      - {{ feature }}
-    @endeach
+    - {{ feature }}
+    @end
+{{-- :: markdown :: --}}
+# Readme
+This is **bold** markdown
+{{ variable }}
+- list item
+{{-- // markdown --}}

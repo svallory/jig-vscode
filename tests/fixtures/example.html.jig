@@ -5,14 +5,14 @@
     <p>Welcome back, {{ user.name }}!</p>
   @else
     <p>Please <a href="/login">log in</a>.</p>
-  @end
+  @endif
 
   <ul>
     @each(item in items)
-      <li class="@if(item.active) active @end">
+      <li class="@if(item.active) active @endif">
         {{ item.label }}
       </li>
-    @end
+    @endeach
   </ul>
 
   {{-- This is a Jig comment --}}
@@ -27,7 +27,7 @@
   @if(showDetails)
     - Item one
     - Item two
-  @end
+  @endif
 
   {{ dynamicContent }}
   {{{ escapedDynamicContent }}}

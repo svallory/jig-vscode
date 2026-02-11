@@ -9,12 +9,12 @@ int main() {
 
     @if(debugMode)
     std::cout << "Debug mode active" << std::endl;
-    @endif
+    @end
 
     std::vector<std::string> items = {
         @each(item in items)
         "{{ item }}",
-        @endeach
+        @end
     };
 
     {{-- Jig comment in C++ --}}

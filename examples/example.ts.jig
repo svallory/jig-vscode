@@ -1,21 +1,19 @@
-// Example for jig-ts
-function init() {
-  const config = {
-    apiKey: '{{ secrets.apiKey }}',
-    environment: '{{ env }}'
-  };
-
-  @if(debugMode)
-    console.log('Jig is active for jig-ts');
-  @endif
-
-  const list = [
-    @each(val in values)
-      '{{ val }}',
-    @endeach
-  ];
-
-  return config.{{ property }};
-}
-
-{{-- Jig structures interleaved with host language --}}
+import { Router } from 'express'
+const router = Router()
+@each(route in routes)
+router.{{ route.method }}('{{ route.path }}', async (req, res) => {
+  const data = {{ route.handler }}(req)
+  @if(route.authenticated)
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  @end
+  res.json(data)
+})
+@end
+{{-- :: markdown :: --}}
+# API Documentation
+This router handles {{ routes.length }} **routes**.
+- Supports authentication
+{{-- // markdown --}}
+export default router

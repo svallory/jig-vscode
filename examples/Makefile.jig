@@ -7,9 +7,9 @@ export APP_NAME="{{ name }}"
 @else
   echo "Starting in production"
   npm start
-@endif
+@end
 
 # Dynamic dependencies
 @each(dep in dependencies)
   # Installing {{ dep }}
-@endeach
+@end

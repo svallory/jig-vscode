@@ -5,12 +5,12 @@ fn main() {
 
     @if(debugMode)
     println!("Debug mode is active");
-    @endif
+    @end
 
     let items = vec![
         @each(item in items)
         "{{ item }}",
-        @endeach
+        @end
     ];
 
     {{-- Jig comment in Rust --}}

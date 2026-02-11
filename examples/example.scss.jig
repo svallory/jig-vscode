@@ -7,7 +7,7 @@
     display: flex;
   @else
     display: block;
-  @endif
+  @end
 
   background-image: url('{{ backgroundImage }}');
 }
@@ -17,4 +17,4 @@
   .bg-{{ color.name }} {
     background-color: {{ color.value }};
   }
-@endeach
+@end

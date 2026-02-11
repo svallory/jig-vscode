@@ -7,12 +7,12 @@ function init() {
 
   @if(debugMode)
     console.log('Jig is active for jig-jsx');
-  @endif
+  @end
 
   const list = [
     @each(val in values)
       '{{ val }}',
-    @endeach
+    @end
   ];
 
   return config.{{ property }};

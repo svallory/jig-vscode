@@ -1,17 +1,31 @@
 # {{ title }}
 
-This is a markdown file with Jig structures.
+This is a **Jig** markdown template.
+
+This router handles {{ routes.length }} **routes**.
 
 @if(showBanner)
 ![Banner]({{ bannerUrl }})
-@endif
+@end
 
 ## Features
 
 @each(feature in features)
 - **{{ feature.name }}**: {{ feature.description }}
-@endeach
+@end
 
-{{-- Jig comment in Markdown --}}
+{{-- Jig comment --}}
 
-> Quote: {{{ quote }}}
+> Quote: {{{ rawQuote }}}
+
+{{-- :: ts :: --}}
+interface Route {
+  path: string
+  method: 'GET' | 'POST'
+}
+
+const routes: Route[] = []
+{{-- // ts --}}
+
+## Footer
+Made by {{ author }}

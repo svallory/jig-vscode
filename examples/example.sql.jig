@@ -6,8 +6,8 @@ FROM users
 WHERE id = {{ userId }}
   @if(activeOnly)
     AND status = 'active'
-  @endif
+  @end
 ORDER BY
   @each(sort in sortBy)
-    {{ sort.column }} {{ sort.direction }}@if(!loop.last),@endif
-  @endeach;
+    {{ sort.column }} {{ sort.direction }}@if(!loop.last),@end
+  @end;
