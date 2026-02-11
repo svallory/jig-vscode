@@ -2,8 +2,16 @@
 .vscode-test/**
 node_modules/**
 src/**
+agent/**
+temp/**
+coverage/**
+tests/**
+scripts/**
+examples/**
+.github/**
 .gitignore
 .prettierignore
+bun.lock
 **/tsconfig.json
 **/*.map
 **/*.ts
