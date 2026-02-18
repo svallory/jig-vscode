@@ -2,7 +2,7 @@
   "publisher": "svallory",
   "name": "jig",
   "displayName": "Jig Templates",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Official Jig template engine extension for VSCode",
   "author": "virk",
   "license": "MIT",

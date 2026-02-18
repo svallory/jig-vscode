@@ -131,7 +131,10 @@ function generateEmbedTagRule(
 
   const beginCaptures: Record<string, object> = {}
   beginCaptures[String(2 + capOffset)] = { name: 'support.function.jig' }
-  beginCaptures[String(4 + capOffset)] = { name: 'meta.embedded.block.javascript' }
+  beginCaptures[String(4 + capOffset)] = {
+    name: 'meta.embedded.block.javascript',
+    patterns: [{ include: 'source.ts#expression' }],
+  }
   beginCaptures[String(5 + capOffset)] = { name: 'storage.type.embedded.jig' }
 
   // Build inner patterns
