@@ -597,7 +597,7 @@ function updatePackageJson(
 
   packageJson.contributes.grammars = [...handCraftedGrammars, ...generatedGrammars]
 
-  writeFileSync(PACKAGE_JSON_FILE, JSON.stringify(packageJson, null, 2))
+  writeFileSync(PACKAGE_JSON_FILE, JSON.stringify(packageJson, null, 2) + '\n')
 }
 
 // ---------------------------------------------------------------------------
