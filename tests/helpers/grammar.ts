@@ -24,7 +24,8 @@ function buildScopeMap(): Map<string, string> {
   // 1. Load extension grammars from package.json (just like VSCode does)
   const pkgPath = path.join(PROJECT_ROOT, 'package.json')
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
-  const registeredGrammars: Array<{ scopeName: string; path: string }> = pkg.contributes?.grammars || []
+  const registeredGrammars: Array<{ scopeName: string; path: string }> =
+    pkg.contributes?.grammars || []
   for (const entry of registeredGrammars) {
     if (!entry.scopeName || !entry.path) continue
     const filePath = path.resolve(PROJECT_ROOT, entry.path)
@@ -135,10 +136,7 @@ export interface LineTokens {
  * Tokenize content using a given grammar scope.
  * Returns token info for each line.
  */
-export async function tokenizeContent(
-  scopeName: string,
-  content: string
-): Promise<LineTokens[]> {
+export async function tokenizeContent(scopeName: string, content: string): Promise<LineTokens[]> {
   const registry = createRegistry()
   const grammar = await registry.loadGrammar(scopeName)
   if (!grammar) {
@@ -171,7 +169,11 @@ export async function tokenizeContent(
  * Get the first token on a specific line (0-indexed) that matches the given text exactly.
  * Returns undefined if not found.
  */
-export function getToken(result: LineTokens[], lineIndex: number, text: string): TokenInfo | undefined {
+export function getToken(
+  result: LineTokens[],
+  lineIndex: number,
+  text: string
+): TokenInfo | undefined {
   const line = result[lineIndex]
   if (!line) return undefined
   return line.tokens.find((t) => t.text === text)

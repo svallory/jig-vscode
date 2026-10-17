@@ -5391,14 +5391,22 @@
     "ignorePatterns": [
       "out",
       "syntaxes",
-      "test/fixtures",
+      "tests/fixtures",
       "snippets",
-      "schemas"
+      "schemas",
+      ".vscode",
+      "dist",
+      "coverage",
+      "temp",
+      "agent"
     ],
     "extends": [
       "@julr/eslint-config-ts",
       "@julr/eslint-config-prettier"
-    ]
+    ],
+    "rules": {
+      "sonarjs/no-duplicate-string": "off"
+    }
   },
   "c8": {
     "reporter": [

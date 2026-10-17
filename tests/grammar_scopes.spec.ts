@@ -2,14 +2,14 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { test } from '@japa/runner'
 import {
-  tokenizeContent,
+  formatScopes,
+  getLineTokens,
   getToken,
   getTokens,
-  getLineTokens,
-  tokenHasScope,
   tokenHasAllScopes,
+  tokenHasScope,
   tokenLacksAllScopes,
-  formatScopes,
+  tokenizeContent,
 } from './helpers/grammar'
 
 // All tests use source.jig.html as the primary grammar (matching Edge.js pattern).
@@ -175,7 +175,7 @@ test.group('Grammar Scopes | Jig HTML grammar (source.jig.html)', () => {
 
   test("@!component('name'): @!component gets support.function.jig", async ({ assert }) => {
     const result = await tokenizeContent('source.jig.html', "@!component('name')")
-    const token = getToken(result, 0, "@!component")
+    const token = getToken(result, 0, '@!component')
     assert.isDefined(token, 'Expected @!component token on line 0')
     assert.isTrue(
       tokenHasScope(token!, 'support.function.jig'),
@@ -203,7 +203,7 @@ test.group('Grammar Scopes | Jig HTML grammar (source.jig.html)', () => {
 
   test('@@section: gets support.function.jig (double-at)', async ({ assert }) => {
     const result = await tokenizeContent('source.jig.html', "@@section('main')")
-    const token = getToken(result, 0, "@@section")
+    const token = getToken(result, 0, '@@section')
     assert.isDefined(token, 'Expected @@section token on line 0')
     assert.isTrue(
       tokenHasScope(token!, 'support.function.jig'),
@@ -214,10 +214,10 @@ test.group('Grammar Scopes | Jig HTML grammar (source.jig.html)', () => {
 
 test.group('Grammar Scopes | Multiline template', () => {
   const content = [
-    '{{-- a comment --}}',  // L0
-    '@if(showHeader)',       // L1
-    '  {{ title }}',         // L2
-    '@end',                  // L3
+    '{{-- a comment --}}', // L0
+    '@if(showHeader)', // L1
+    '  {{ title }}', // L2
+    '@end', // L3
   ].join('\n')
 
   test('line 0: {{-- gets comment.block + punctuation.definition.comment.begin.jig', async ({
@@ -365,7 +365,9 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
     )
   })
 
-  test('L19: {{{ unescapedHtml }}} outside markdown gets safe mustache scopes', async ({ assert }) => {
+  test('L19: {{{ unescapedHtml }}} outside markdown gets safe mustache scopes', async ({
+    assert,
+  }) => {
     const result = await getResult()
     const token = getToken(result, 19, '{{{')
     assert.isDefined(token, 'Expected {{{ on line 19')
@@ -379,7 +381,7 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
 
   test('L21: @section on embed line gets support.function.jig', async ({ assert }) => {
     const result = await getResult()
-    const token = getToken(result, 21, "@section")
+    const token = getToken(result, 21, '@section')
     assert.isDefined(token, 'Expected @section token on line 21')
     assert.isTrue(
       tokenHasScope(token!, 'support.function.jig'),
@@ -398,9 +400,7 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
     )
   })
 
-  test('L33: @end closes embed, NOT inside meta.embedded.block.markdown', async ({
-    assert,
-  }) => {
+  test('L33: @end closes embed, NOT inside meta.embedded.block.markdown', async ({ assert }) => {
     const result = await getResult()
     const token = getToken(result, 33, '@end')
     assert.isDefined(token, 'Expected @end token on line 33')
@@ -469,10 +469,7 @@ test.group('Grammar Scopes | Full fixture (example.html.jig)', () => {
     const token = getToken(result, 31, 'dynamicContent')
     assert.isDefined(token, 'Expected "dynamicContent" on line 31')
     assert.isTrue(
-      tokenHasAllScopes(token!, [
-        'meta.embedded.block.javascript',
-        'meta.embedded.block.markdown',
-      ]),
+      tokenHasAllScopes(token!, ['meta.embedded.block.javascript', 'meta.embedded.block.markdown']),
       `Missing expected scopes: ${formatScopes(token!)}`
     )
   })
@@ -666,7 +663,7 @@ test.group('Grammar Scopes | Jig YAML grammar (text.jig.yaml)', () => {
 
   test('L14: @section on embed line gets support.function.jig', async ({ assert }) => {
     const result = await getYamlResult()
-    const token = getToken(result, 14, "@section")
+    const token = getToken(result, 14, '@section')
     assert.isDefined(token, 'Expected @section token on line 14')
     assert.isTrue(
       tokenHasScope(token!, 'support.function.jig'),
@@ -699,7 +696,9 @@ test.group('Grammar Scopes | Jig YAML grammar (text.jig.yaml)', () => {
     )
   })
 
-  test('L17: {{ variable }} on own line inside embedded markdown gets Jig mustache scopes', async ({ assert }) => {
+  test('L17: {{ variable }} on own line inside embedded markdown gets Jig mustache scopes', async ({
+    assert,
+  }) => {
     const result = await getYamlResult()
     const token = getToken(result, 17, '{{')
     assert.isDefined(token, 'Expected {{ on line 17')
@@ -758,10 +757,7 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
   // 25: (blank)
   // 26: export default router
 
-  const tsContent = fs.readFileSync(
-    path.resolve(__dirname, '../examples/example.ts.jig'),
-    'utf-8'
-  )
+  const tsContent = fs.readFileSync(path.resolve(__dirname, '../examples/example.ts.jig'), 'utf-8')
   let cachedTsResult: Awaited<ReturnType<typeof tokenizeContent>> | null = null
   async function getTsResult() {
     if (!cachedTsResult) {
@@ -865,7 +861,9 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     )
   })
 
-  test('L20: @if(list): inside markdown list continuation gets support.function.jig', async ({ assert }) => {
+  test('L20: @if(list): inside markdown list continuation gets support.function.jig', async ({
+    assert,
+  }) => {
     const result = await getTsResult()
     const token = getToken(result, 20, '@if')
     assert.isDefined(token, 'Expected @if token on line 20')
@@ -875,7 +873,9 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     )
   })
 
-  test('L21: "-" inside nested @if block gets markdown list scope, not TS arithmetic', async ({ assert }) => {
+  test('L21: "-" inside nested @if block gets markdown list scope, not TS arithmetic', async ({
+    assert,
+  }) => {
     const result = await getTsResult()
     const token = getToken(result, 21, '-')
     assert.isDefined(token, 'Expected "-" on line 21')
@@ -903,7 +903,9 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     )
   })
 
-  test('L24: @if(includeData): json — nested JSON embed inside markdown gets correct scopes', async ({ assert }) => {
+  test('L24: @if(includeData): json — nested JSON embed inside markdown gets correct scopes', async ({
+    assert,
+  }) => {
     const result = await getTsResult()
     const token = getToken(result, 24, '@if')
     assert.isDefined(token, 'Expected @if token on line 24')
@@ -919,7 +921,9 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     )
   })
 
-  test('L25-L27: JSON content inside nested embed gets meta.embedded.block.json', async ({ assert }) => {
+  test('L25-L27: JSON content inside nested embed gets meta.embedded.block.json', async ({
+    assert,
+  }) => {
     const result = await getTsResult()
     const token = getToken(result, 25, '{')
     assert.isDefined(token, 'Expected "{" on line 25')
@@ -1017,10 +1021,7 @@ test.group('Grammar Scopes | Jig Markdown grammar (text.jig.markdown)', () => {
   // 29: ## Footer
   // 30: Made by {{ author }}
 
-  const mdContent = fs.readFileSync(
-    path.resolve(__dirname, '../examples/example.md.jig'),
-    'utf-8'
-  )
+  const mdContent = fs.readFileSync(path.resolve(__dirname, '../examples/example.md.jig'), 'utf-8')
   let cachedMdResult: Awaited<ReturnType<typeof tokenizeContent>> | null = null
   async function getMdResult() {
     if (!cachedMdResult) {
@@ -1154,7 +1155,9 @@ test.group('Grammar Scopes | Jig Markdown grammar (text.jig.markdown)', () => {
     )
   })
 
-  test('L22: path: string gets TypeScript type annotation inside embedded TS block', async ({ assert }) => {
+  test('L22: path: string gets TypeScript type annotation inside embedded TS block', async ({
+    assert,
+  }) => {
     const result = await getMdResult()
     const token = getToken(result, 22, 'string')
     assert.isDefined(token, 'Expected "string" on line 22')
@@ -1269,7 +1272,9 @@ test.group('Grammar Scopes | Tag-based embed in Jig TypeScript', () => {
     )
   })
 
-  test('L5: **bold** gets markup.bold.markdown + meta.embedded.block.markdown', async ({ assert }) => {
+  test('L5: **bold** gets markup.bold.markdown + meta.embedded.block.markdown', async ({
+    assert,
+  }) => {
     const result = await getEmbedResult()
     const token = getToken(result, 5, 'bold')
     assert.isDefined(token, 'Expected "bold" on line 5')
@@ -1279,7 +1284,9 @@ test.group('Grammar Scopes | Tag-based embed in Jig TypeScript', () => {
     )
   })
 
-  test('L5: {{ name }} inline in markdown paragraph gets punctuation.mustache.begin (via injection)', async ({ assert }) => {
+  test('L5: {{ name }} inline in markdown paragraph gets punctuation.mustache.begin (via injection)', async ({
+    assert,
+  }) => {
     const result = await getEmbedResult()
     const token = getToken(result, 5, '{{')
     assert.isDefined(token, 'Expected {{ on line 5')
@@ -1334,7 +1341,10 @@ test.group('Grammar Scopes | Tag-based embed in Jig TypeScript', () => {
     const tokens = getLineTokens(result, 13)
     assert.isTrue(tokens.length > 0, 'Expected tokens on line 13')
     const jsonToken = tokens.find((t) => tokenHasScope(t, 'meta.embedded.block.json'))
-    assert.isDefined(jsonToken, 'Expected at least one token with meta.embedded.block.json on line 13')
+    assert.isDefined(
+      jsonToken,
+      'Expected at least one token with meta.embedded.block.json on line 13'
+    )
   })
 
   test('L13: {{ item }} inside JSON embed gets punctuation.mustache.begin', async ({ assert }) => {
@@ -1347,7 +1357,9 @@ test.group('Grammar Scopes | Tag-based embed in Jig TypeScript', () => {
     )
   })
 
-  test('L15: export after embeds gets keyword.control.export.ts, no embedded scopes', async ({ assert }) => {
+  test('L15: export after embeds gets keyword.control.export.ts, no embedded scopes', async ({
+    assert,
+  }) => {
     const result = await getEmbedResult()
     const token = getToken(result, 15, 'export')
     assert.isDefined(token, 'Expected "export" on line 15')
@@ -1390,9 +1402,7 @@ test.group('Grammar Scopes | Regression — no double-matching', () => {
     }
   })
 
-  test('comment.block (not comment.block.jig) is used for regular comments', async ({
-    assert,
-  }) => {
+  test('comment.block (not comment.block.jig) is used for regular comments', async ({ assert }) => {
     const result = await tokenizeContent('source.jig.html', '{{-- text --}}')
     const inner = getToken(result, 0, ' text ')
     assert.isDefined(inner, 'Expected inner text token on line 0')
