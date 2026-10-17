@@ -86,21 +86,6 @@ function getPerLanguageScopeName(lang: LanguageConfig): string {
 }
 
 // ---------------------------------------------------------------------------
-// Language alternation for embeds — matches ALL language short names + aliases
-// ---------------------------------------------------------------------------
-
-function buildAllLanguageAlternation(languages: LanguageConfig[]): string {
-  const names: string[] = []
-  for (const lang of languages) {
-    names.push(escapeRegex(getShortName(lang)))
-    for (const alias of lang.overrideAliases ?? []) {
-      names.push(escapeRegex(alias))
-    }
-  }
-  return `(?i:${names.join('|')})`
-}
-
-// ---------------------------------------------------------------------------
 // Embed tag rule generators
 // ---------------------------------------------------------------------------
 

@@ -10,7 +10,6 @@ import {
   tokenHasAllScopes,
   tokenLacksAllScopes,
   formatScopes,
-  dumpTokens,
 } from './helpers/grammar'
 
 // All tests use source.jig.html as the primary grammar (matching Edge.js pattern).
@@ -861,8 +860,8 @@ test.group('Grammar Scopes | Jig TypeScript grammar (text.jig.ts)', () => {
     const tokens = getTokens(result, 16, '**')
     assert.isTrue(tokens.length >= 2, 'Expected at least 2 ** tokens on line 16')
     assert.isTrue(
-      tokenHasScope(tokens[0], 'markup.bold.markdown'),
-      `Missing markup.bold.markdown: ${formatScopes(tokens[0])}`
+      tokenHasScope(tokens[0]!, 'markup.bold.markdown'),
+      `Missing markup.bold.markdown: ${formatScopes(tokens[0]!)}`
     )
   })
 
