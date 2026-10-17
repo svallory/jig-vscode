@@ -3,11 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   checks:
-    uses: jig-js/.github/.github/workflows/test.yml@main
+    uses: ./.github/workflows/checks.yml
 
   release:
     needs: checks
@@ -42,5 +42,5 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: "*.vsix"
+          files: '*.vsix'
           generate_release_notes: true

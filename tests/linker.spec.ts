@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import { join } from 'node:path'
 import { test } from '@japa/runner'
 import dedent from 'dedent'
