@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This repository is archived. Development continues in the monorepo [hyperlab-sh/jig](https://github.com/hyperlab-sh/jig/tree/main/packages/vscode), which keeps the full history.
+
 <div align="center">
   <h2>Jig IDE Extensions</h2>
 </div>
